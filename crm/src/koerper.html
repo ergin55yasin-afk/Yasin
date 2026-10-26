@@ -1,0 +1,21 @@
+<body>
+<a class="skip" href="#view">Zum Inhalt springen</a>
+<aside class="nav" id="nav" aria-label="Hauptnavigation"></aside>
+<div class="shell">
+<header class="top">
+  <div class="top-t"><h1 id="title">Start</h1><p id="dateline"></p></div>
+  <button class="top-search" data-act="search" aria-label="Suchen (Strg+K)"><span class="ic-s"></span><span>Kunden, Aufgaben, Wissen suchen</span><kbd>Strg K</kbd></button>
+  <div class="topbtns"><button class="icon only-m" data-act="search" aria-label="Suchen"></button><button class="icon" data-act="more" aria-label="Mehr und Einstellungen"></button></div>
+</header>
+<div id="fbui" hidden></div>
+<div class="banner" id="banner"></div>
+<main id="view" tabindex="-1"></main>
+</div>
+<nav class="bnav" id="bnav" aria-label="Bereiche"></nav>
+<button class="fab" data-act="add" aria-label="Neuer Eintrag" hidden></button>
+<div id="sheet" hidden>
+  <div class="backdrop" data-act="close"></div>
+  <div class="panel" role="dialog" aria-modal="true"><div class="grab"></div><div id="sheetbody"></div></div>
+</div>
+<div id="toast" hidden role="status"><span id="toastmsg"></span><button id="toastbtn" hidden></button></div>
+<datalist id="kunden-list"></datalist>

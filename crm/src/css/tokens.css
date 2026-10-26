@@ -1,0 +1,42 @@
+/* ===== Designsystem: Grundwerte =====
+   Schrift: Inter für die Oberfläche, Newsreader nur für Leitfragen und Kernaussagen im Gespräch.
+   Abstände: 4 · 8 · 12 · 16 · 24 · 32 · 48. Radien: 8 · 12 · 18.
+   Farben tragen Bedeutung: primary = Auswahl/Aktion, ok = gedeckt/entlastet, warn = prüfen, late = Lücke/überfällig. */
+:root{
+  --font:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;
+  --font-serif:"Newsreader",Georgia,"Times New Roman",serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:24px;--s6:32px;--s7:48px;
+  --r-s:8px;--r:12px;--r-l:18px;
+  --bg:#F4F6F9;--surface:#FFFFFF;--surface-2:#F8F9FB;--sunken:#EEF1F5;--line:#E3E7ED;--line-2:#CBD3DE;
+  --ink:#101B30;--ink-2:#34425A;--muted:#5E6C84;
+  --brand:#0F2747;--brand-2:#173761;--brand-ink:#E8EEF8;--brand-muted:#9FB0CA;
+  --primary:#2B50C8;--primary-strong:#1F3EA3;--primary-soft:#E9EEFC;--primary-ink:#FFFFFF;
+  --ok:#1D7650;--ok-soft:#E2F2E9;--warn:#995A06;--warn-soft:#FCEFD9;--late:#B42318;--late-soft:#FCE9E7;--violet:#6650B0;--violet-soft:#EEEAFA;
+  --shadow-1:0 1px 2px rgba(16,27,48,.06),0 1px 1px rgba(16,27,48,.03);
+  --shadow-2:0 6px 20px rgba(16,27,48,.08),0 1px 3px rgba(16,27,48,.05);
+  --shadow-3:0 18px 50px rgba(16,27,48,.18);
+  --focus:0 0 0 3px rgba(43,80,200,.35);
+  /* Aliasse für bestehende Bausteine */
+  --accent:var(--primary);--accent-ink:var(--primary-ink);--chip:var(--sunken);--cta:var(--primary);--cta-ink:var(--primary-ink);
+  --amber:#C27A0E;--orange:#C27A0E;--c-alter:#B7791F;--c-anlage:var(--ok);--c-late-bg:var(--late-soft);--c-anlage-bg:var(--ok-soft);--c-warn-bg:var(--warn-soft);--font-d:var(--font);--r-legacy:12px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0B1120;--surface:#121A2B;--surface-2:#161F33;--sunken:#1A2539;--line:#243049;--line-2:#34425E;
+    --ink:#E7ECF5;--ink-2:#C3CDDD;--muted:#94A2B9;--brand:#0A1428;--brand-2:#13213D;
+    --primary:#7D9BFF;--primary-strong:#A3B8FF;--primary-soft:#1D2A4C;--primary-ink:#0B1120;
+    --ok:#5EC290;--ok-soft:#11301F;--warn:#E5AA4D;--warn-soft:#33250E;--late:#F28B7E;--late-soft:#3A1916;--violet:#B5A4F0;--violet-soft:#2A2343;
+    --shadow-1:none;--shadow-2:0 6px 20px rgba(0,0,0,.35);--focus:0 0 0 3px rgba(125,155,255,.45);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0B1120;--surface:#121A2B;--surface-2:#161F33;--sunken:#1A2539;--line:#243049;--line-2:#34425E;
+  --ink:#E7ECF5;--ink-2:#C3CDDD;--muted:#94A2B9;--brand:#0A1428;--brand-2:#13213D;
+  --primary:#7D9BFF;--primary-strong:#A3B8FF;--primary-soft:#1D2A4C;--primary-ink:#0B1120;
+  --ok:#5EC290;--ok-soft:#11301F;--warn:#E5AA4D;--warn-soft:#33250E;--late:#F28B7E;--late-soft:#3A1916;--violet:#B5A4F0;--violet-soft:#2A2343;
+  --shadow-1:none;--shadow-2:0 6px 20px rgba(0,0,0,.35);--focus:0 0 0 3px rgba(125,155,255,.45);
+  color-scheme:dark;
+}
