@@ -105,6 +105,7 @@ function getSample(cb){
 }
 function chFmt(t){return esc(t).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/\n/g,'<br>')}
 function chMsgsHtml(id){
+  if(id==='tr')return trMsgsHtml();
   var c=CH[id];
   return c.msgs.map(function(m){return '<div class="cm '+m.r+'">'+(m.r==='s'?'':'')+chFmt(m.t)+'</div>'}).join('')+(c.busy&&!c.live?'<div class="cm a dim">Denkt nach ...</div>':'');
 }
@@ -115,7 +116,7 @@ function chPaint(id){
 function chIntro(id){
   if(id==='cp')return 'Schreib oder sprich, was passiert ist. Zum Beispiel: „Neuer Vertrag bei 10482, Hausrat, läuft am 1.1. ab" oder „10483 hat zugesagt, Rückmeldung bis Freitag". Ich lege Aufgaben, Verträge, Termine und Angebote an. Bitte nur Kundennummern, keine Namen.';
   if(id==='wk')return wissenList().length?'Frag mich etwas. Ich antworte nur aus deiner Wissensdatenbank ('+wissenList().length+' Einträge).':'Die Wissensdatenbank ist noch leer. Lege über „Einträge" Wissen an, zum Beispiel Einwandbehandlung, Produktregeln oder Abläufe. Danach beantworte ich Fragen daraus.';
-  return CH.tr.on?'':'Wähle eine Kundenrolle und starte das Übungsgespräch. Du sprichst oder schreibst, die KI spielt den Kunden. Am Ende bekommst du Feedback. Es werden keine echten Kundendaten verwendet.';
+  return CH.tr.on?'':'Wähle Szenario, Kunde und Modus und starte das Übungsgespräch. Du sprichst oder schreibst, die KI spielt den Kunden und bleibt in der Rolle. Am Ende bekommst du ein strukturiertes Feedback zu deinem Gesprächsverlauf. Es werden keine echten Kundendaten verwendet.';
 }
 function viewChat(id){
   var c=CH[id],h='';
@@ -123,9 +124,7 @@ function viewChat(id){
   if(id==='tr'){
     h+='<div class="plbar"><button class="chip" data-act="tr-mode" data-id="drill" aria-pressed="'+(trMode==='drill')+'">Einwandtrainer</button><button class="chip" data-act="tr-mode" data-id="rolle" aria-pressed="'+(trMode==='rolle')+'">Rollenspiel</button></div>';
     if(trMode==='drill')return h+drHtml();
-    h+='<div class="plbar">'+TR_ROLES.map(function(r){return '<button class="chip" data-act="tr-role" data-id="'+r[0]+'" aria-pressed="'+(c.role===r[0])+'">'+r[1]+'</button>'}).join('')+'</div>';
-    h+='<div class="plbar">'+(c.on?'<button class="btn small primary" data-act="tr-end">Gespräch beenden und Feedback</button>':(c.fbBusy?'':'<button class="btn small primary" data-act="tr-start">'+(c.msgs.length?'Neues Gespräch starten':'Gespräch starten')+'</button>'))+'<button class="chip" data-act="tr-voice" aria-pressed="'+!!c.voice+'">Kunde spricht laut</button></div>';
-    h+=trFbHtml();
+    h+=trKopfHtml();
   }
   var intro=chIntro(id);
   h+='<div class="chat"><div class="cmsgs" id="cm-'+id+'" aria-live="polite">'+(intro?'<div class="cm i">'+chFmt(intro)+'</div>':'')+chMsgsHtml(id)+'</div>'+
@@ -133,7 +132,7 @@ function viewChat(id){
     (speechOk()?'<button class="btn" data-act="chat-mic" data-id="'+id+'" aria-label="Sprechen" id="cmic-'+id+'">'+ico('mic',20)+'</button>':'')+
     '<button class="btn primary" id="cs-'+id+'" data-act="'+(c.busy?'chat-stop':'chat-send')+'" data-id="'+id+'">'+(c.busy?'Stopp':'Senden')+'</button></div>'+
     '<p class="hint-t" id="cn-'+id+'">'+(id==='tr'?'Übung mit KI. Es werden keine echten Kundendaten verwendet.':'Antworten kommen von Claude auf deinem Konto. Keine Namen oder Kontaktdaten eintragen.')+'</p></div>';
-  return h;
+  return h+(id==='tr'?trHistHtml():'');
 }
 function speechOk(){return !!(window.SpeechRecognition||window.webkitSpeechRecognition)}
 var recog=null,trMode='drill';
@@ -186,8 +185,7 @@ function chPrompt(id){
     var W=wissenList().map(function(w){return '### '+w.titel+'\n'+w.text}).join('\n\n').slice(0,150000);
     return 'Du bist der Wissens-Assistent für einen Versicherungsvertreter. Beantworte Fragen nur anhand der folgenden Wissensdatenbank. Steht die Antwort nicht darin, sage das offen und schlage vor, einen Eintrag zu ergänzen; erfinde nichts. Nenne den Titel des Eintrags, aus dem du antwortest. Antworte kurz und auf Deutsch.\n\nWISSENSDATENBANK:\n'+(W||'(leer)');
   }
-  var r=TR_ROLES.filter(function(x){return x[0]===CH.tr.role})[0]||TR_ROLES[0];
-  return 'Du spielst in einem Verkaufstraining einen Bankkunden in einem Beratungsgespräch zu einer Versicherung. Rolle: '+r[1]+'. '+r[2]+' WICHTIG zur Rollenverteilung: DU bist der KUNDE. Der Nutzer ist der VERSICHERUNGSBERATER und führt das Gespräch. Du stellst keine Beratungsfragen und führst keine Bedarfsanalyse durch (also nie Fragen wie „Was ist Ihnen wichtig?“, „Wie sieht Ihre Situation aus?“ oder „Wie kann ich Ihnen helfen?“). Du antwortest nur auf das, was der Berater fragt oder sagt. Du darfst als Kunde Rückfragen stellen, die ein Kunde stellt (Kosten, Leistung, Kleingedrucktes, „Brauche ich das wirklich?“) und Einwände bringen, bleibst aber immer der, der beraten wird. Bleib in der Rolle, antworte kurz (1 bis 3 Sätze), wie ein echter Mensch am Tisch, ohne Aufzählungen. Erfinde keine echten Namen, Adressen oder Kontaktdaten. Mache es dem Berater realistisch, aber nicht unmöglich: reagiere positiv, wenn er gute offene Fragen stellt, Nutzen statt Preis zeigt und Pausen lässt. Beende die Rolle nie von dir aus.';
+  return trPrompt();
 }
 function chSend(id){
   var c=CH[id];if(c.busy)return;
@@ -212,7 +210,7 @@ function chRun(id,extra){
     sample(turns,opt).then(function(res){
       c.busy=false;var m=c.msgs[c.msgs.length-1];if(m&&m.live){m.live=false;m.t=res.text}else c.msgs.push({r:'a',t:res.text});
       if(created.length)c.msgs.push({r:'s',t:'Angelegt:\n'+created.map(function(x){return '• '+x}).join('\n')});
-      chPaint(id);if(id==='tr')chSpeak(res.text);if(created.length)render();
+      chPaint(id);if(id==='tr'){chSpeak(res.text);trNachKunde(c.msgs[c.msgs.length-1])}if(created.length)render();
     },function(er){
       c.busy=false;var m=c.msgs[c.msgs.length-1];if(m&&m.live){m.live=false;if(!er||er.code==='cancelled'){}}
       if(!er||er.code!=='cancelled')c.msgs.push({r:'s',t:chErr(er)});
@@ -220,46 +218,6 @@ function chRun(id,extra){
       chPaint(id);if(created.length)render();
     });
   });
-}
-function trStart(){
-  var c=CH.tr;if(!c.role){toast('Bitte eine Kundenrolle wählen');return}
-  c.msgs=[];c.on=true;c.fb=null;c.fbErr='';render();chRun('tr','(Das Gespräch beginnt. Du bist der Kunde und sitzt dem Berater gegenüber. Sag kurz Hallo und in einem Satz, warum du heute da bist oder was dich vorsichtig macht. Stell dem Berater keine Beratungsfrage und warte, dass er das Gespräch führt.)');
-}
-function trEnd(){
-  var c=CH.tr;
-  if(c.busy&&c.ctl)c.ctl.abort();
-  c.on=false;c.fb=null;c.fbErr='';
-  if(window.speechSynthesis)try{window.speechSynthesis.cancel()}catch(e){}
-  if(!c.msgs.some(function(m){return m.r==='u'})){c.fbErr='Gespräch beendet. Für ein Feedback brauchst du mindestens eine eigene Antwort im Gespräch.';render();return}
-  trFeedback();
-}
-/* Feedback als eigener Aufruf: Coach-Anweisung plus Gesprächsverlauf, ohne die Rollenanweisung des Kunden */
-function trFeedback(){
-  var c=CH.tr,r=TR_ROLES.filter(function(x){return x[0]===c.role})[0]||TR_ROLES[0];
-  var verlauf=c.msgs.filter(function(m){return m.r==='u'||m.r==='a'}).map(function(m){return (m.r==='u'?'BERATER: ':'KUNDE: ')+m.t}).join('\n');
-  c.fbBusy=true;c.fbErr='';render();
-  getSample(function(sample){
-    if(!sample){c.fbBusy=false;c.fbErr='Die KI ist in dieser Ansicht nicht verfügbar. Öffne die Seite in Claude.';render();return}
-    var pr='Du bist ein erfahrener Verkaufstrainer für Versicherungsberater in Deutschland (Zusammenarbeit mit einer Volksbank). Unten steht ein Übungsgespräch. Der Kunde wurde von einer KI gespielt, Rolle: '+r[1]+' ('+r[2]+'). Bewerte nur, was der BERATER gesagt hat, fair und konkret. Beziehe dich auf Stellen aus dem Gespräch. Achte auf: Gesprächseinstieg, offene Fragen, Zuhören und Eingehen auf den Kunden, Umgang mit Einwänden, Nutzen statt Preis, nächster Schritt. Keine Namen, keine Floskeln, Du-Form an den Berater.\n\nAntworte NUR als JSON in dieser Form: {"gesamt":"1 bis 2 Sätze Gesamteindruck","staerken":["3 konkrete Stärken"],"verbesserungen":["3 konkrete Verbesserungen, jeweils mit Bezug auf eine Stelle im Gespräch"],"satz":"ein Satz, den der Berater beim nächsten Mal wörtlich ausprobieren kann","punkte":1-5}\n\nGESPRÄCH:\n'+verlauf.slice(0,12000);
-    sample.json(pr,{modelTier:'default',cache:false}).then(function(o){
-      function L(a){return (Array.isArray(a)?a:[]).map(function(x){return String(x==null?'':x).trim().slice(0,400)}).filter(Boolean).slice(0,5)}
-      if(!o||typeof o!=='object')throw {code:'invalid_json'};
-      var fb={gesamt:String(o.gesamt||'').trim().slice(0,500),staerken:L(o.staerken),verbesserungen:L(o.verbesserungen),satz:String(o.satz||'').trim().slice(0,400),punkte:Math.max(1,Math.min(5,Math.round(Number(o.punkte)||0)))||null};
-      if(!fb.gesamt&&!fb.staerken.length&&!fb.verbesserungen.length)throw {code:'invalid_json'};
-      c.fb=fb;c.fbBusy=false;render();var el=$('tr-fb');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
-    }).catch(function(er){c.fbBusy=false;c.fbErr=er&&er.code==='invalid_json'?'Das Feedback war nicht lesbar. Bitte erneut versuchen.':chErr(er);render()});
-  });
-}
-function trFbText(){var f=CH.tr.fb;if(!f)return '';return 'Feedback zum Übungsgespräch\n\n'+(f.gesamt?f.gesamt+'\n\n':'')+'Stärken:\n'+f.staerken.map(function(x){return '- '+x}).join('\n')+'\n\nVerbesserungen:\n'+f.verbesserungen.map(function(x){return '- '+x}).join('\n')+(f.satz?'\n\nNächstes Mal ausprobieren: '+f.satz:'')}
-function trFbHtml(){
-  var c=CH.tr;
-  if(c.fbBusy)return '<div class="ds-callout" id="tr-fb" role="status">Das Gespräch ist beendet. Das Feedback wird erstellt …</div>';
-  if(c.fbErr)return '<div class="ds-callout bad" id="tr-fb" role="alert">'+esc(c.fbErr)+(c.msgs.some(function(m){return m.r==='u'})?'<div class="btnrow wrap"><button class="btn small" data-act="tr-fb-retry">Feedback erneut anfordern</button></div>':'')+'</div>';
-  var f=c.fb;if(!f)return '';
-  return '<section class="ds-card trfb" id="tr-fb"><div class="ds-cap">Feedback zu deinem Gespräch'+(f.punkte?' · Einschätzung der KI: '+f.punkte+' von 5':'')+'</div>'+(f.gesamt?'<p class="trfb-g">'+esc(f.gesamt)+'</p>':'')+
-    '<div class="trfb-2"><div><h4>Das war gut</h4><ul class="ds-list">'+f.staerken.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ul></div><div><h4>Das geht besser</h4><ul class="ds-list">'+f.verbesserungen.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ul></div></div>'+
-    (f.satz?'<blockquote class="kq">'+esc(f.satz)+'</blockquote>':'')+
-    '<p class="ds-source">KI-Einschätzung zu einem Übungsgespräch, keine Bewertung durch einen Menschen.</p><div class="btnrow wrap"><button class="btn small" data-act="tr-fb-copy">Feedback kopieren</button><button class="btn small primary" data-act="tr-start">Neues Gespräch starten</button></div></section>';
 }
 function wkEdit(){
   var h='<h3>Wissensdatenbank</h3><p class="sub">Eigene Einträge, keine Kundendaten. Der Chat antwortet nur daraus.</p>';
@@ -471,11 +429,12 @@ var storageOk=true,dl=null;
 var tab='start',angFilter='offen',kundeQuery='',kundeAkt='';
 var addState=null,angDraft=null,todoDraft=null,berDraft=null,sheetFn=null,toastTimer=null;
 
-function emptyDb(){return {v:3,vertraege:[],todos:[],angebote:[],termine:[],beratungen:[],laufend:[],lexikon:null,dismissed:{},lastBackup:0,settings:{}}}
+function emptyDb(){return {v:3,vertraege:[],todos:[],angebote:[],termine:[],beratungen:[],laufend:[],lexikon:null,training:[],dismissed:{},lastBackup:0,settings:{}}}
 function normalize(d){
   if(!d||!Array.isArray(d.todos)||!Array.isArray(d.angebote)||!Array.isArray(d.termine))return null;
   d.v=3;
   if(!Array.isArray(d.laufend))d.laufend=[];
+  if(!Array.isArray(d.training))d.training=[];
   if(!d.lexikon||typeof d.lexikon!=='object'||!Array.isArray(d.lexikon.eintraege))d.lexikon=null;
   if(!Array.isArray(d.beratungen))d.beratungen=[];
   if(!Array.isArray(d.vertraege))d.vertraege=[];
@@ -1012,7 +971,8 @@ document.addEventListener('click',function(ev){
     case 'chat-send':chSend(id);break;
     case 'chat-stop':if(CH[id]&&CH[id].ctl)CH[id].ctl.abort();break;
     case 'chat-mic':chMic(id);break;
-    case 'tr-role':CH.tr.role=id;render();break;
+    case 'tr-role':if(CH.tr.on){toast('Die Kundenrolle lässt sich nach dem Gespräch ändern.');break}CH.tr.role=id;render();break;
+    case 'tr-szen':case 'tr-modus':case 'tr-coach':case 'tr-coach-close':case 'tr-hist':case 'tr-hist-copy':case 'tr-hist-del':trAct(act,btn);break;
     case 'tr-start':trStart();break;
     case 'tr-end':trEnd();break;
     case 'tr-fb-retry':trFeedback();break;
