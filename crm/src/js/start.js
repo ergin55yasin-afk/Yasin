@@ -81,14 +81,15 @@ function viewStart(){
   }else wb=leer('Keine offenen Rückmeldungen oder Wiedervorlagen.');
   // Mit Kunden vereinbart (nur besprochene oder bestätigte Themen)
   var ver=[];db.laufend.forEach(function(s){Object.keys(s.themen||{}).forEach(function(k){var b=(s.bedarf||{})[k];if(b==='bestaetigt'||b==='besprochen')ver.push({s:s,k:k,b:b})})});
-  var vb=ver.length?'<ul class="agreed">'+ver.slice(0,6).map(function(v){return '<li><button data-act="bs-open" data-id="'+v.s.id+'"><b>'+esc(v.s.kunde||'ohne Nr.')+'</b><span>'+esc(themaName(v.k))+'</span><span class="stat-pill s-'+(v.b==='bestaetigt'?'ok':'info')+'">'+(v.b==='bestaetigt'?'Kundenwunsch bestätigt':'besprochen')+'</span></button></li>'}).join('')+'</ul><p class="fine-s">Nur Themen, die im Gespräch besprochen oder vom Kunden bestätigt wurden. Vermutungen erscheinen hier nicht.</p>':'';
+  var spt=[];db.laufend.forEach(function(x){felderGeklaert(x).forEach(function(f){if(f.e.status==='spaeter')spt.push({s:x,f:f})})});
+  var vb=ver.length||spt.length?'<ul class="agreed">'+ver.slice(0,6).map(function(v){return '<li><button data-act="bs-open" data-id="'+v.s.id+'"><b>'+esc(v.s.kunde||'ohne Nr.')+'</b><span>'+esc(themaName(v.k))+'</span><span class="stat-pill s-'+(v.b==='bestaetigt'?'ok':'info')+'">'+(v.b==='bestaetigt'?'Kundenwunsch bestätigt':'besprochen')+'</span></button></li>'}).join('')+spt.slice(0,4).map(function(v){var wv=v.f.e.wv&&db.todos.find(function(t){return t.id===v.f.e.wv});return '<li><button data-act="bs-open" data-id="'+v.s.id+'"><b>'+esc(v.s.kunde||'ohne Nr.')+'</b><span>'+esc(v.f.f.t)+'</span><span class="stat-pill s-warn">'+(wv?'später, ab '+esc(fmtDate(wv.due)):'für später vorgemerkt')+'</span></button></li>'}).join('')+'</ul><p class="fine-s">Nur Themen, die im Gespräch besprochen oder vom Kunden bestätigt wurden. Vermutungen erscheinen hier nicht.</p>':'';
   // Fristen
   var rad=radarList().filter(function(o){return o.i.st==='verpasst'||o.i.st==='dringend'});
   var fb=rad.length?'<ul class="tasks">'+rad.slice(0,4).map(function(o){return '<li class="task late"><span class="dot-i" aria-hidden="true">'+ico('clock',16)+'</span><button class="task-b" data-act="open-vertrag" data-id="'+o.v.id+'"><span class="task-t">'+esc(o.v.sparte)+': '+(o.i.st==='verpasst'?'Kündigungsfrist verpasst':'Kündigung bis '+fmtFull(o.i.bis))+'</span><span class="task-m"><b>'+esc(o.v.kunde)+'</b> · läuft ab '+fmtFull(o.v.ablauf)+'</span></button></li>'}).join('')+'</ul>':'';
   h+='<div class="dash"><div class="dash-main">'+
     sec('Termine',ter.length,'<button class="lnk" data-act="add-termin">'+ico('plus',16)+'Termin</button>',tb)+
     sec('Laufende Beratungen',lauf.length,'<button class="lnk" data-act="tab" data-tab="beratung">Alle</button>',lb)+
-    (vb?sec('Mit Kunden vereinbarte Themen',null,'',vb):'')+
+    (vb?sec('Mit Kunden vereinbart',null,'',vb):'')+
     '</div><div class="dash-side">'+
     sec('Meine Aufgaben',ueber.length+faellig.length,'<button class="lnk" data-act="tab" data-tab="aufgaben">Alle</button>',ab)+
     sec('Rückmeldungen und Wiedervorlagen',waits.length+angW.length,'',wb)+

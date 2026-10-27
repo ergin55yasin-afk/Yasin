@@ -50,7 +50,7 @@ function kmode(){return !!(cur&&cur.modus==='kunde'&&tab==='beratung')}
 function neueSitzung(k,anl){
   var s={id:uid(),kunde:k||'',anliegen:anl||'',anliegenText:'',themen:{},bedarf:{},antworten:{},notiz:'',offen:[],doku:{vereinbarungen:'',next:'',termin:'',gesehen:0},step:'anliegen',besucht:{anliegen:1},erledigt:{},status:'laufend',modus:'berater',created:Date.now(),updated:Date.now(),adv:newAdv(k||'')};
   s.adv.mods={alter:false,anlage:false,kv:false,sach:false,vorsorge:false,pflege:false,bu:false};
-  if(anl){s.themen[anl]={quelle:'anliegen',ts:Date.now()};s.step='situation';s.besucht.situation=1;s.erledigt.anliegen=1}
+  if(anl){s.themen[anl]={quelle:'anliegen',ts:Date.now()}}
   db.laufend.push(s);return s;
 }
 function oeffneSitzung(s){
@@ -77,7 +77,7 @@ function bsSteps(){
   var s=cur,L=[];
   L.push({key:'anliegen',name:'Anliegen',grp:'Einstieg',kind:'anliegen'});
   L.push({key:'situation',name:'Lebenssituation',grp:'Einstieg',kind:'situation'});
-  L.push({key:'themen',name:'Themen wählen',grp:'Einstieg',kind:'themen'});
+  L.push({key:'themen',name:'Überblick und Zusammenhänge',grp:'Einstieg',kind:'themen'});
   themenFolge().forEach(function(k){
     var d=themaDef(k),g=d[1],mod=d[4];
     if(mod==='sach')L.push({key:'f:'+k,name:'Ist und Soll vergleichen',grp:g,kind:'form',form:'sach',thema:k});
@@ -153,19 +153,12 @@ function stepHtml(st){
   var km=kmode();
   if(st.kind==='anliegen'){
     return stepHead(st,'Mit welchem Anliegen kommt der Kunde? Es bleibt während der ganzen Beratung sichtbar.')+
-      '<div class="tcards small">'+THEMEN.map(function(t){var on=cur.anliegen===t[0];return '<button class="tcard'+(on?' on':'')+'" data-act="bs-anl" data-a="'+t[0]+'" aria-pressed="'+on+'"><span class="tc-ill">'+themaIll(t[0])+'</span><span class="tc-b"><span class="tc-ic" aria-hidden="true">'+ico(t[3],20)+'</span><strong>'+esc(t[1])+'</strong><span>'+esc(t[2])+'</span></span></button>'}).join('')+'</div>'+
-      '<label class="fl"><span>Anliegen in den Worten des Kunden <em class="opt">optional</em></span><textarea data-bs="anliegenText" maxlength="400" placeholder="z. B. „Wir haben ein Haus gekauft und wollen wissen, ob wir richtig abgesichert sind.“">'+esc(cur.anliegenText)+'</textarea></label>'+
+      (function(){var tc='<div class="tcards small">'+THEMEN.map(function(t){var on=cur.anliegen===t[0];return '<button class="tcard'+(on?' on':'')+'" data-act="bs-anl" data-a="'+t[0]+'" aria-pressed="'+on+'"><span class="tc-ill">'+themaIll(t[0])+'</span><span class="tc-b"><span class="tc-ic" aria-hidden="true">'+ico(t[3],20)+'</span><strong>'+esc(t[1])+'</strong><span>'+esc(t[2])+'</span></span></button>'}).join('')+'</div>';
+        return cur.anliegen?'<div class="anl-sel"><span class="anl-ill" aria-hidden="true">'+themaIll(cur.anliegen)+'</span><span><p class="eyebrow">Anliegen</p><b>'+esc(themaName(cur.anliegen))+'</b></span></div>'+anlassForm()+'<details class="adv"><summary>Anderes Anliegen wählen</summary>'+tc+'</details>':tc+anlassForm()})()+
       (km?'':'<label class="fl"><span>Kundennummer <em class="opt">nur für das CRM</em></span><input type="text" data-bs="kunde" value="'+esc(cur.kunde)+'" maxlength="20" placeholder="z. B. 10482" autocomplete="off" list="kunden-list"></label>');
   }
   if(st.kind==='situation')return stepHead(st,'Wie lebt der Kunde heute? Nur Lebensumstände, keine Namen und keine Gesundheitsangaben.')+'<div class="bs-form">'+kdForm()+'</div>';
-  if(st.kind==='themen'){
-    var sel=cur.themen,vor={};
-    Object.keys(sel).forEach(function(k){(ZUSAMMEN[k]||[]).forEach(function(z){if(!sel[z[0]])(vor[z[0]]=vor[z[0]]||[]).push({von:k,t:z[1]})})});
-    var h=stepHead(st,'Welche Themen besprechen Sie heute? Es gibt keine Mindestzahl. Ein Thema kann genügen.');
-    if(Object.keys(vor).length)h+='<div class="hint-box"><b>'+ico('link',16)+'Mögliche Gesprächsansätze</b><p>Aus den gewählten Themen ergeben sich diese Fragen. Ob sie für den Kunden wichtig sind, klärt das Gespräch.</p><ul>'+Object.keys(vor).map(function(k){return '<li><button class="chip" data-act="bs-thema" data-a="'+k+'">'+ico('plus',14)+esc(themaName(k))+'</button><span>'+esc(vor[k].map(function(v){return v.t}).join(' '))+'</span></li>'}).join('')+'</ul></div>';
-    h+='<div class="tcards small">'+THEMEN.map(function(t){var on=!!sel[t[0]];return '<button class="tcard'+(on?' on':'')+'" data-act="bs-thema" data-a="'+t[0]+'" aria-pressed="'+on+'"><span class="tc-ill">'+themaIll(t[0])+'</span><span class="tc-b"><span class="tc-ic" aria-hidden="true">'+ico(t[3],20)+'</span><strong>'+esc(t[1])+(t[0]===cur.anliegen?' <em class="anl-tag">Anliegen</em>':'')+'</strong><span>'+esc(t[2])+'</span></span><span class="tc-check" aria-hidden="true">'+(on?'✓':'')+'</span></button>'}).join('')+'</div>';
-    return h;
-  }
+  if(st.kind==='themen')return ueberblickHtml(st);
   if(st.kind==='slide'){
     var s=st.slide,fm=s.form?s.form():'',lv=s.live?s.live():'';
     return stepHead(st,'')+'<div class="bs-grid'+(s.text?'':' one')+'">'+(s.text?'<div class="bs-text">'+s.text+lexKnopf(st.thema)+'</div>':'')+'<div class="bs-work"><div id="tform">'+fm+'</div><div id="tlive">'+lv+'</div></div></div>';
@@ -220,7 +213,8 @@ function ergebnisHtml(st){
   var km=kmode(),ks=themenFolge(),d=cur.doku;
   var h=stepHead(st,'Was wurde besprochen, was ist vereinbart, was ist noch offen? Gehen Sie diese Seite gemeinsam durch.');
   h+='<div class="sum"><div class="sum-a"><p class="eyebrow">Anliegen</p><p class="sum-l">'+esc(cur.anliegen?themaName(cur.anliegen):'Nicht angegeben')+(cur.anliegenText?'</p><p class="muted">„'+esc(cur.anliegenText)+'“':'')+'</p></div>';
-  h+='<table class="ttab"><thead><tr><th>Thema</th><th>Woher</th><th>Stand</th></tr></thead><tbody>'+ks.map(function(k){var b=cur.bedarf[k]||'';if(km&&b==='vermutet')b='';var q=cur.themen[k].quelle;return '<tr><td><b>'+esc(themaName(k))+'</b></td><td>'+(q==='anliegen'?'Anliegen des Kunden':q==='vorschlag'?'aus einem Gesprächsansatz gewählt':'im Gespräch gewählt')+'</td><td>'+bedarfPill(b)+'</td></tr>'}).join('')+'</tbody></table>';
+  h+='<table class="ttab"><thead><tr><th>Thema</th><th>Woher</th><th>Stand</th></tr></thead><tbody>'+ks.map(function(k){var b=cur.bedarf[k]||'';if(km&&b==='vermutet')b='';var q=cur.themen[k].quelle;return '<tr><td><b>'+esc(themaName(k))+'</b></td><td>'+(q==='anliegen'?'Anliegen des Kunden':q==='zusammenhang'?'im Überblick gemeinsam gewählt':q==='vorschlag'?'aus einem Gesprächsansatz gewählt':'im Gespräch gewählt')+'</td><td>'+bedarfPill(b)+'</td></tr>'}).join('')+'</tbody></table>';
+  h+=felderErgebnis(km);
   ks.forEach(function(k){var R=antwortZeilen(k);if(R.length)h+='<div class="ds-card"><div class="ds-cap">'+esc(themaName(k))+': wesentliche Angaben</div>'+pfFacts(R)+'</div>'});
   h+='<p class="fine-s">Die Zahlen stammen aus den Eingaben und Rechnern der Beratung. Ein Thema gilt erst als bestätigt, wenn der Kunde es so gesagt hat.</p></div>';
   var of=sessionOffen(cur);
@@ -289,6 +283,8 @@ function dokuReport(b){
   b.push({t:'p',text:'Anliegen: '+(cur.anliegen?themaName(cur.anliegen):'nicht angegeben')+(cur.anliegenText?'. In Ihren Worten: „'+cur.anliegenText+'“':'')+'.'});
   var rows=ks.map(function(k){var v=cur.bedarf[k]||'';if(v==='vermutet')v='';return [themaName(k),pfLbl(BEDARF,v)||'noch offen']});
   if(rows.length)b.push({t:'table',head:['Thema','Stand'],w:[0.6,0.4],rows:rows});
+  var fg=felderGeklaert().filter(function(x){return x.e.status!=='angesprochen'||!x.e.jetzt});
+  if(fg.length){b.push({t:'h',text:'Weitere Lebensbereiche, über die wir gesprochen haben'});b.push({t:'table',head:['Bereich','Vereinbart'],w:[0.6,0.4],rows:fg.map(function(x){var wv=x.e.wv&&db.todos.find(function(t){return t.id===x.e.wv});return [x.f.t,(x.e.jetzt?'heute besprochen':FSTATUS_K[feldStatusVon(cur,x.k)]||'')+(wv?', Termin ab '+fmtFull(wv.due):'')]})})}
   var d=cur.doku,of=sessionOffen(cur);
   if(d.vereinbarungen.trim()){b.push({t:'h',text:'Vereinbarungen'});b.push({t:'p',text:d.vereinbarungen.trim()})}
   if(of.length){b.push({t:'h',text:'Offene Fragen'});b.push({t:'bul',items:of})}
@@ -313,7 +309,7 @@ function bsAct(act,btn){
     case 'bs-kende':openSheet('<h3>Kundenmodus beenden?</h3><p>Danach werden interne Notizen, Einschätzungen und Hinweise wieder angezeigt. Bitte erst beenden, wenn der Kunde nicht mehr auf den Bildschirm schaut.</p><div class="btnrow"><button class="btn" data-act="close">Im Kundenmodus bleiben</button><button class="btn primary" data-act="bs-kende-ok">Beratermodus anzeigen</button></div>');return;
     case 'bs-kende-ok':cur.modus='berater';closeSheet();sessSave();renderTalk();return;
     case 'bs-anl':{var an=btn.dataset.a;if(cur.anliegen&&cur.themen[cur.anliegen]&&cur.themen[cur.anliegen].quelle==='anliegen'&&cur.anliegen!==an)cur.themen[cur.anliegen].quelle='gewaehlt';cur.anliegen=an;cur.themen[an]=cur.themen[an]||{ts:Date.now()};cur.themen[an].quelle='anliegen';syncMods();sessSave();renderTalk(true);return}
-    case 'bs-thema':{var t=btn.dataset.a;if(cur.themen[t]){if(t===cur.anliegen){toast('Das Anliegen bleibt Teil der Beratung.');return}delete cur.themen[t]}else{var vor=btn.classList.contains('chip');cur.themen[t]={quelle:vor?'vorschlag':'gewaehlt',ts:Date.now()}}syncMods();sessSave();renderTalk(true);return}
+    case 'bs-thema':{var t=btn.dataset.a;uebAdd=!!btn.closest('.ueb-add');if(cur.themen[t]){if(t===cur.anliegen){toast('Das Anliegen bleibt Teil der Beratung.');return}delete cur.themen[t]}else{var vor=btn.classList.contains('chip');cur.themen[t]={quelle:vor?'vorschlag':'gewaehlt',ts:Date.now()}}syncMods();sessSave();renderTalk(true);return}
     case 'bs-bedarf':{var kk=btn.dataset.k,v=btn.dataset.v;cur.bedarf[kk]=cur.bedarf[kk]===v?'':v;sessSave();renderTalk(true);return}
     case 'bs-offen-add':{var inp=$('bs-ofq'),tx=inp?inp.value.trim():'';if(!tx)return;var er=checkText(tx);if(er){toast(er);return}cur.offen.push({id:uid(),t:tx.slice(0,160),k:btn.dataset.k||'',done:false});sessSave();renderTalk(true);return}
     case 'bs-offen-t':{var o=cur.offen.find(function(x){return x.id===btn.dataset.id});if(o){o.done=!o.done;sessSave();renderTalk(true)}return}
@@ -323,6 +319,12 @@ function bsAct(act,btn){
       if(nx&&cur.kunde){var ex=db.todos.some(function(x){return x.kunde===cur.kunde&&x.text==='Nächster Schritt: '+nx&&!x.done});if(!ex)db.todos.push({id:uid(),kunde:cur.kunde,text:('Nächster Schritt: '+nx).slice(0,300),due:adv.wvDays&&adv.wvDays!=='0'?addDaysIso(todayIso(),Number(adv.wvDays)):addDaysIso(todayIso(),14),done:false,ts:Date.now()})}
       cur.status='abgeschlossen';cur.erledigt.unterlage=1;cur.erledigt.ergebnis=1;sessSave();var kd=cur.kunde;cur=null;adv=null;talkOpen=false;document.body.classList.remove('in-bs');
       if(kd){kundeAkt=kd;tab='kunde'}else tab='beratung';render();toast('Beratung abgeschlossen'+(nx&&kd?', nächster Schritt als Aufgabe angelegt':''));return}
+    case 'bs-fopen':{var fk=btn.dataset.k;uebOffen=uebOffen===fk?'':fk;if(uebOffen&&kmode()&&feldStatus(fk)==='erkannt'){felderObj()[fk].status='angesprochen';felderObj()[fk].ts=Date.now();sessSave()}renderTalk(true);return}
+    case 'bs-feld':feldSetzen(btn.dataset.k,btn.dataset.s);sessSave();renderTalk(true);return;
+    case 'bs-fwv':feldWv(btn.dataset.k,btn.dataset.m);save();sessSave();renderTalk(true);return;
+    case 'bs-fwv-del':{var fe=felderObj()[btn.dataset.k];if(fe&&fe.wv){db.todos=db.todos.filter(function(x){return x.id!==fe.wv||x.done});fe.wv=''}save();sessSave();renderTalk(true);return}
+    case 'bs-fokus':{c=curStep();cur.erledigt.themen=1;cur.fokus=Object.keys(felderObj()).some(function(x){return felderObj()[x].jetzt})?'':'anliegen';var ix=c.L.map(function(x){return x.key}).indexOf('themen');sessSave();if(ix>=0&&ix<c.L.length-1)geheZu(c.L[ix+1].key);return}
+    case 'bs-aend':{var A=anlassObj().aenderung,ak=btn.dataset.k,ai=A.indexOf(ak);if(ai>=0)A.splice(ai,1);else A.push(ak);sessSave();renderTalk(true);return}
     case 'bs-lex':openLexThema(btn.dataset.k);return;
     case 'bs-lexe':openLexEintrag(btn.dataset.id,true);return;
     case 'bs-mailende':mailAdv=false;adv=null;render();return;
@@ -330,11 +332,11 @@ function bsAct(act,btn){
 }
 document.addEventListener('input',function(ev){
   var t=ev.target;if(!cur||!t.dataset)return;
-  if(t.dataset.bs!==undefined){var p=t.dataset.bs,v=t.value;if(p==='kunde'){v=v.trim().toUpperCase();cur.kunde=v;adv.kunde=v}else setp(cur,p,v);sessDirty();return}
+  if(t.dataset.bs!==undefined){var p=t.dataset.bs,v=t.value;if(p==='kunde'){v=v.trim().toUpperCase();cur.kunde=v;adv.kunde=v}else{if(/^anlass\./.test(p))anlassObj();setp(cur,p,v)}sessDirty();return}
   if(t.dataset.bsa!==undefined){var q=t.dataset.bsa.split('.');if(!cur.antworten[q[0]])cur.antworten[q[0]]={};cur.antworten[q[0]][q[1]]=t.value;sessDirty();return}
   if(t.dataset.adv!==undefined||t.dataset.sig!==undefined)sessDirty();
 });
 document.addEventListener('change',function(ev){if(cur&&ev.target.dataset&&ev.target.dataset.adv!==undefined)sessDirty()});
 document.addEventListener('click',function(){if(cur)sessDirty()});
 /* Im Kundenmodus erlaubte Aktionen: nur Bedienung der Beratung selbst */
-var KMODE_OK=/^(bs-(go|next|prev|anl|thema|bedarf|offen-add|offen-t|gesehen|kende|kende-ok|lex|lexe)|adv-(pfset|pfopt|pfoff|pfp|ue|ent|wish|grp|wenn|leben|row-add|row-del|an-add|an-del|kvl-add|kvl-del|fp-from-tax)|ganz-set|ev-set|talk-jump|setdate|close|lexk-.*)$/;
+var KMODE_OK=/^(bs-(go|next|prev|anl|thema|bedarf|offen-add|offen-t|gesehen|kende|kende-ok|lex|lexe|fopen|feld|fokus|aend)|adv-(pfset|pfopt|pfoff|pfp|ue|ent|wish|grp|wenn|leben|row-add|row-del|an-add|an-del|kvl-add|kvl-del|fp-from-tax)|ganz-set|ev-set|talk-jump|setdate|close|lexk-.*)$/;

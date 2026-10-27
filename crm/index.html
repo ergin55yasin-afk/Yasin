@@ -557,6 +557,45 @@ body.kmode .bs-text .tp,body.kmode .bs-text .tl{font-size:19px}
 
 @container (max-width:860px){.bs-grid{grid-template-columns:minmax(0,1fr)}.sh-ill{width:180px}}
 
+/* ===== Persönlicher Überblick: Anliegen in der Mitte, wenige begründete Bereiche ===== */
+.ueb-h{margin:0 0 20px;max-width:720px}.ueb-h h2{margin:0 0 6px;font-family:var(--font-serif);font-weight:500;font-size:30px;line-height:1.15}.ueb-h .lead{margin:0;color:var(--muted)}
+.ueb{display:grid;grid-template-columns:minmax(240px,320px) minmax(0,1fr);gap:28px;align-items:start}
+.ueb-anchor{position:sticky;top:12px;border-radius:var(--r-l);background:var(--sunken);border:1px solid var(--line);overflow:hidden}
+.ueb-ill svg{display:block;width:100%;height:auto;max-height:150px;object-fit:cover}
+.ueb-ab{padding:18px 20px 20px}.ueb-ab h3{margin:0 0 6px;font-family:var(--font-serif);font-weight:500;font-size:24px;line-height:1.2}
+.ueb-q{margin:0 0 14px;font-family:var(--font-serif);font-style:italic;font-size:16.5px;line-height:1.45;color:var(--ink)}
+.ueb-lage{margin:14px 0 16px}.ueb-lage ul{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 0;padding:0;list-style:none}
+.ueb-lage li{font-size:13px;padding:3px 10px;border-radius:999px;background:var(--surface);border:1px solid var(--line)}
+.ueb-fh{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 16px;margin:0 0 12px}.ueb-fh h3{margin:0;font-size:18px}
+.ueb-prog{display:inline-flex;align-items:center;gap:10px;font-size:13px;color:var(--muted)}
+.ueb-prog .bar{display:block;width:96px;height:6px;border-radius:999px;background:var(--sunken);overflow:hidden}.ueb-prog .bar i{display:block;height:100%;background:var(--primary);border-radius:999px}
+.fcards{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.fcard{border:1px solid var(--line);border-radius:var(--r-l);background:var(--surface);transition:border-color .12s,box-shadow .12s}
+.fcard:hover{border-color:var(--line-2)}.fcard.open{border-color:var(--primary);box-shadow:var(--shadow-2)}
+.fc-h{display:flex;align-items:flex-start;gap:14px;width:100%;padding:16px 18px;background:none;border:0;text-align:left;color:inherit;cursor:pointer;font:inherit}
+.fc-ic{flex:none;display:grid;place-items:center;width:42px;height:42px;border-radius:12px;background:var(--sunken);color:var(--primary)}
+.fc-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}.fc-t b{font-size:16px}.fc-t span{font-size:14px;color:var(--muted);line-height:1.45}
+.fc-chev{flex:none;width:10px;height:10px;margin-top:8px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);transition:transform .15s}
+.fcard.open .fc-chev{transform:rotate(225deg);margin-top:12px}
+.fc-b{padding:0 18px 18px 74px}
+.fc-d{margin:0;display:grid;gap:12px}.fc-d dt{font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:0 0 2px}.fc-d dd{margin:0;line-height:1.5}.fc-d ul{margin:0;padding-left:18px}
+.fc-q{margin:16px 0 8px;padding:12px 16px;border-left:3px solid var(--primary);background:var(--sunken);border-radius:0 var(--r) var(--r) 0;font-family:var(--font-serif);font-size:17px;line-height:1.45}
+.fc-q span{display:block;font-family:var(--font);font-size:11.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:0 0 4px}
+.fc-a{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.ueb-done{margin:28px 0 0}.ueb-done h3{margin:0 0 10px;font-size:16px}
+.ueb-done ul,.fd-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.ueb-done li{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:10px 14px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+.fd-ic{color:var(--muted);display:flex}.fd-t{flex:1;min-width:160px;display:flex;flex-direction:column}.fd-t small{color:var(--muted)}
+.fd-wv{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;font-size:13px;color:var(--muted);width:100%;padding-left:30px}
+.fd-list li{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;padding:6px 0;border-bottom:1px solid var(--line)}.fd-list li:last-child{border-bottom:0}.fd-list b{flex:1;min-width:160px}.fd-list small{width:100%;color:var(--muted)}
+.ueb-stay{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 20px;margin:24px 0 16px;padding:16px 20px;border-radius:var(--r-l);border:1px dashed var(--line-2);background:var(--surface)}
+.ueb-stay p{margin:0;max-width:560px;font-family:var(--font-serif);font-size:17px;line-height:1.45}
+.anlass{margin:20px 0 0;padding:18px 20px;border:1px solid var(--line);border-radius:var(--r-l);background:var(--sunken)}.anlass h3{margin:0 0 4px;font-size:16px}
+@container (max-width:760px){.ueb{grid-template-columns:minmax(0,1fr)}.ueb-anchor{position:static;display:grid;grid-template-columns:120px minmax(0,1fr)}.ueb-ill svg{height:100%;max-height:none}.fc-b{padding:0 16px 16px}}
+@container (max-width:460px){.ueb-anchor{grid-template-columns:minmax(0,1fr)}.ueb-ill{display:none}.ueb-h h2{font-size:24px}}
+.anl-sel{display:flex;align-items:center;gap:16px;padding:12px 16px 12px 12px;border:1px solid var(--line);border-radius:var(--r-l);background:var(--surface)}
+.anl-sel .anl-ill{width:120px;flex:none;border-radius:var(--r);overflow:hidden}.anl-sel .anl-ill svg{display:block;width:100%;height:auto}.anl-sel b{font-size:19px}.anl-sel .eyebrow{margin:0}
+
 /* ===== Beraterwissen ===== */
 .wtool{display:flex;gap:12px;margin:8px 0 12px}.wtool .searchf{flex:1}
 .wfilter{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 20px}.wfilter select{width:auto;min-height:38px;font-size:14px;padding:6px 10px}
@@ -4472,14 +4511,15 @@ function viewStart(){
   }else wb=leer('Keine offenen Rückmeldungen oder Wiedervorlagen.');
   // Mit Kunden vereinbart (nur besprochene oder bestätigte Themen)
   var ver=[];db.laufend.forEach(function(s){Object.keys(s.themen||{}).forEach(function(k){var b=(s.bedarf||{})[k];if(b==='bestaetigt'||b==='besprochen')ver.push({s:s,k:k,b:b})})});
-  var vb=ver.length?'<ul class="agreed">'+ver.slice(0,6).map(function(v){return '<li><button data-act="bs-open" data-id="'+v.s.id+'"><b>'+esc(v.s.kunde||'ohne Nr.')+'</b><span>'+esc(themaName(v.k))+'</span><span class="stat-pill s-'+(v.b==='bestaetigt'?'ok':'info')+'">'+(v.b==='bestaetigt'?'Kundenwunsch bestätigt':'besprochen')+'</span></button></li>'}).join('')+'</ul><p class="fine-s">Nur Themen, die im Gespräch besprochen oder vom Kunden bestätigt wurden. Vermutungen erscheinen hier nicht.</p>':'';
+  var spt=[];db.laufend.forEach(function(x){felderGeklaert(x).forEach(function(f){if(f.e.status==='spaeter')spt.push({s:x,f:f})})});
+  var vb=ver.length||spt.length?'<ul class="agreed">'+ver.slice(0,6).map(function(v){return '<li><button data-act="bs-open" data-id="'+v.s.id+'"><b>'+esc(v.s.kunde||'ohne Nr.')+'</b><span>'+esc(themaName(v.k))+'</span><span class="stat-pill s-'+(v.b==='bestaetigt'?'ok':'info')+'">'+(v.b==='bestaetigt'?'Kundenwunsch bestätigt':'besprochen')+'</span></button></li>'}).join('')+spt.slice(0,4).map(function(v){var wv=v.f.e.wv&&db.todos.find(function(t){return t.id===v.f.e.wv});return '<li><button data-act="bs-open" data-id="'+v.s.id+'"><b>'+esc(v.s.kunde||'ohne Nr.')+'</b><span>'+esc(v.f.f.t)+'</span><span class="stat-pill s-warn">'+(wv?'später, ab '+esc(fmtDate(wv.due)):'für später vorgemerkt')+'</span></button></li>'}).join('')+'</ul><p class="fine-s">Nur Themen, die im Gespräch besprochen oder vom Kunden bestätigt wurden. Vermutungen erscheinen hier nicht.</p>':'';
   // Fristen
   var rad=radarList().filter(function(o){return o.i.st==='verpasst'||o.i.st==='dringend'});
   var fb=rad.length?'<ul class="tasks">'+rad.slice(0,4).map(function(o){return '<li class="task late"><span class="dot-i" aria-hidden="true">'+ico('clock',16)+'</span><button class="task-b" data-act="open-vertrag" data-id="'+o.v.id+'"><span class="task-t">'+esc(o.v.sparte)+': '+(o.i.st==='verpasst'?'Kündigungsfrist verpasst':'Kündigung bis '+fmtFull(o.i.bis))+'</span><span class="task-m"><b>'+esc(o.v.kunde)+'</b> · läuft ab '+fmtFull(o.v.ablauf)+'</span></button></li>'}).join('')+'</ul>':'';
   h+='<div class="dash"><div class="dash-main">'+
     sec('Termine',ter.length,'<button class="lnk" data-act="add-termin">'+ico('plus',16)+'Termin</button>',tb)+
     sec('Laufende Beratungen',lauf.length,'<button class="lnk" data-act="tab" data-tab="beratung">Alle</button>',lb)+
-    (vb?sec('Mit Kunden vereinbarte Themen',null,'',vb):'')+
+    (vb?sec('Mit Kunden vereinbart',null,'',vb):'')+
     '</div><div class="dash-side">'+
     sec('Meine Aufgaben',ueber.length+faellig.length,'<button class="lnk" data-act="tab" data-tab="aufgaben">Alle</button>',ab)+
     sec('Rückmeldungen und Wiedervorlagen',waits.length+angW.length,'',wb)+
@@ -4535,6 +4575,8 @@ function viewKunde(){
   // Themen und Bedarfe aus Beratungen
   var bed=[];sess.forEach(function(s){Object.keys(s.themen||{}).forEach(function(k){bed.push({s:s,k:k,b:(s.bedarf||{})[k]||''})})});
   h+=sec('Themen und Bedarfe',null,'',bed.length?'<ul class="needs">'+bed.map(function(x){return '<li><span class="nd-ic" aria-hidden="true">'+ico(themaIcon(x.k),18)+'</span><span class="nd-t"><b>'+esc(themaName(x.k))+'</b><small>'+(x.s.status==='abgeschlossen'?'Beratung abgeschlossen ':'Beratung läuft ')+esc(fmtFull(iso(new Date(x.s.updated))))+'</small></span>'+bedarfPill(x.b)+'</li>'}).join('')+'</ul><p class="fine-s">„Vermutet“ ist eine interne Einschätzung und wurde nicht mit dem Kunden bestätigt.</p>':leer('Noch keine Themen aus einer Beratung erfasst.'));
+  var lb=[];sess.forEach(function(x){felderGeklaert(x).forEach(function(f){lb.push({s:x,f:f})})});
+  if(lb.length)h+=sec('Weitere Lebensbereiche',null,'','<ul class="needs">'+lb.map(function(x){var st=x.f.e.jetzt&&feldStatusVon(x.s,x.f.k)!=='bestaetigt'?'jetzt':feldStatusVon(x.s,x.f.k),wv=x.f.e.wv&&db.todos.find(function(t){return t.id===x.f.e.wv});return '<li><span class="nd-ic" aria-hidden="true">'+ico(x.f.f.ic,18)+'</span><span class="nd-t"><b>'+esc(x.f.f.t)+'</b><small>'+esc(fmtFull(iso(new Date(x.f.e.ts||x.s.updated))))+(wv?' · Wiedervorlage am '+esc(fmtFull(wv.due)):'')+'</small></span><span class="stat-pill s-'+({jetzt:'info',angesprochen:'info',bestaetigt:'ok',spaeter:'warn',nein:'muted'})[st]+'">'+(st==='jetzt'?'Besprochen':FSTATUS_K[st])+'</span></li>'}).join('')+'</ul><p class="fine-s">Bereiche, die im Überblick mit dem Kunden angesprochen wurden. Nicht angesprochene Bereiche erscheinen hier nicht.</p>');
   h+=sec('Beratungen',sess.length+be.length,'',(sess.length?'<ul class="runs">'+sess.map(laufKarte).join('')+'</ul>':'')+(be.length?'<ul class="list-s">'+be.map(function(b){return '<li><button data-act="open-ber" data-id="'+b.id+'"><b>'+esc(b.bereich)+'</b><span>'+esc(fmtFull(b.datum))+' · '+esc(ergLabel(b))+'</span>'+(b.note?'<small>'+esc(b.note)+'</small>':'')+'</button></li>'}).join('')+'</ul>':'')+(!sess.length&&!be.length?leer('Noch keine Beratung.'):''));
   h+=sec('Verlauf',null,'',kundeTimeline(nr));
   h+='</div><div class="dash-side">';
@@ -4600,7 +4642,7 @@ function kmode(){return !!(cur&&cur.modus==='kunde'&&tab==='beratung')}
 function neueSitzung(k,anl){
   var s={id:uid(),kunde:k||'',anliegen:anl||'',anliegenText:'',themen:{},bedarf:{},antworten:{},notiz:'',offen:[],doku:{vereinbarungen:'',next:'',termin:'',gesehen:0},step:'anliegen',besucht:{anliegen:1},erledigt:{},status:'laufend',modus:'berater',created:Date.now(),updated:Date.now(),adv:newAdv(k||'')};
   s.adv.mods={alter:false,anlage:false,kv:false,sach:false,vorsorge:false,pflege:false,bu:false};
-  if(anl){s.themen[anl]={quelle:'anliegen',ts:Date.now()};s.step='situation';s.besucht.situation=1;s.erledigt.anliegen=1}
+  if(anl){s.themen[anl]={quelle:'anliegen',ts:Date.now()}}
   db.laufend.push(s);return s;
 }
 function oeffneSitzung(s){
@@ -4627,7 +4669,7 @@ function bsSteps(){
   var s=cur,L=[];
   L.push({key:'anliegen',name:'Anliegen',grp:'Einstieg',kind:'anliegen'});
   L.push({key:'situation',name:'Lebenssituation',grp:'Einstieg',kind:'situation'});
-  L.push({key:'themen',name:'Themen wählen',grp:'Einstieg',kind:'themen'});
+  L.push({key:'themen',name:'Überblick und Zusammenhänge',grp:'Einstieg',kind:'themen'});
   themenFolge().forEach(function(k){
     var d=themaDef(k),g=d[1],mod=d[4];
     if(mod==='sach')L.push({key:'f:'+k,name:'Ist und Soll vergleichen',grp:g,kind:'form',form:'sach',thema:k});
@@ -4703,19 +4745,12 @@ function stepHtml(st){
   var km=kmode();
   if(st.kind==='anliegen'){
     return stepHead(st,'Mit welchem Anliegen kommt der Kunde? Es bleibt während der ganzen Beratung sichtbar.')+
-      '<div class="tcards small">'+THEMEN.map(function(t){var on=cur.anliegen===t[0];return '<button class="tcard'+(on?' on':'')+'" data-act="bs-anl" data-a="'+t[0]+'" aria-pressed="'+on+'"><span class="tc-ill">'+themaIll(t[0])+'</span><span class="tc-b"><span class="tc-ic" aria-hidden="true">'+ico(t[3],20)+'</span><strong>'+esc(t[1])+'</strong><span>'+esc(t[2])+'</span></span></button>'}).join('')+'</div>'+
-      '<label class="fl"><span>Anliegen in den Worten des Kunden <em class="opt">optional</em></span><textarea data-bs="anliegenText" maxlength="400" placeholder="z. B. „Wir haben ein Haus gekauft und wollen wissen, ob wir richtig abgesichert sind.“">'+esc(cur.anliegenText)+'</textarea></label>'+
+      (function(){var tc='<div class="tcards small">'+THEMEN.map(function(t){var on=cur.anliegen===t[0];return '<button class="tcard'+(on?' on':'')+'" data-act="bs-anl" data-a="'+t[0]+'" aria-pressed="'+on+'"><span class="tc-ill">'+themaIll(t[0])+'</span><span class="tc-b"><span class="tc-ic" aria-hidden="true">'+ico(t[3],20)+'</span><strong>'+esc(t[1])+'</strong><span>'+esc(t[2])+'</span></span></button>'}).join('')+'</div>';
+        return cur.anliegen?'<div class="anl-sel"><span class="anl-ill" aria-hidden="true">'+themaIll(cur.anliegen)+'</span><span><p class="eyebrow">Anliegen</p><b>'+esc(themaName(cur.anliegen))+'</b></span></div>'+anlassForm()+'<details class="adv"><summary>Anderes Anliegen wählen</summary>'+tc+'</details>':tc+anlassForm()})()+
       (km?'':'<label class="fl"><span>Kundennummer <em class="opt">nur für das CRM</em></span><input type="text" data-bs="kunde" value="'+esc(cur.kunde)+'" maxlength="20" placeholder="z. B. 10482" autocomplete="off" list="kunden-list"></label>');
   }
   if(st.kind==='situation')return stepHead(st,'Wie lebt der Kunde heute? Nur Lebensumstände, keine Namen und keine Gesundheitsangaben.')+'<div class="bs-form">'+kdForm()+'</div>';
-  if(st.kind==='themen'){
-    var sel=cur.themen,vor={};
-    Object.keys(sel).forEach(function(k){(ZUSAMMEN[k]||[]).forEach(function(z){if(!sel[z[0]])(vor[z[0]]=vor[z[0]]||[]).push({von:k,t:z[1]})})});
-    var h=stepHead(st,'Welche Themen besprechen Sie heute? Es gibt keine Mindestzahl. Ein Thema kann genügen.');
-    if(Object.keys(vor).length)h+='<div class="hint-box"><b>'+ico('link',16)+'Mögliche Gesprächsansätze</b><p>Aus den gewählten Themen ergeben sich diese Fragen. Ob sie für den Kunden wichtig sind, klärt das Gespräch.</p><ul>'+Object.keys(vor).map(function(k){return '<li><button class="chip" data-act="bs-thema" data-a="'+k+'">'+ico('plus',14)+esc(themaName(k))+'</button><span>'+esc(vor[k].map(function(v){return v.t}).join(' '))+'</span></li>'}).join('')+'</ul></div>';
-    h+='<div class="tcards small">'+THEMEN.map(function(t){var on=!!sel[t[0]];return '<button class="tcard'+(on?' on':'')+'" data-act="bs-thema" data-a="'+t[0]+'" aria-pressed="'+on+'"><span class="tc-ill">'+themaIll(t[0])+'</span><span class="tc-b"><span class="tc-ic" aria-hidden="true">'+ico(t[3],20)+'</span><strong>'+esc(t[1])+(t[0]===cur.anliegen?' <em class="anl-tag">Anliegen</em>':'')+'</strong><span>'+esc(t[2])+'</span></span><span class="tc-check" aria-hidden="true">'+(on?'✓':'')+'</span></button>'}).join('')+'</div>';
-    return h;
-  }
+  if(st.kind==='themen')return ueberblickHtml(st);
   if(st.kind==='slide'){
     var s=st.slide,fm=s.form?s.form():'',lv=s.live?s.live():'';
     return stepHead(st,'')+'<div class="bs-grid'+(s.text?'':' one')+'">'+(s.text?'<div class="bs-text">'+s.text+lexKnopf(st.thema)+'</div>':'')+'<div class="bs-work"><div id="tform">'+fm+'</div><div id="tlive">'+lv+'</div></div></div>';
@@ -4770,7 +4805,8 @@ function ergebnisHtml(st){
   var km=kmode(),ks=themenFolge(),d=cur.doku;
   var h=stepHead(st,'Was wurde besprochen, was ist vereinbart, was ist noch offen? Gehen Sie diese Seite gemeinsam durch.');
   h+='<div class="sum"><div class="sum-a"><p class="eyebrow">Anliegen</p><p class="sum-l">'+esc(cur.anliegen?themaName(cur.anliegen):'Nicht angegeben')+(cur.anliegenText?'</p><p class="muted">„'+esc(cur.anliegenText)+'“':'')+'</p></div>';
-  h+='<table class="ttab"><thead><tr><th>Thema</th><th>Woher</th><th>Stand</th></tr></thead><tbody>'+ks.map(function(k){var b=cur.bedarf[k]||'';if(km&&b==='vermutet')b='';var q=cur.themen[k].quelle;return '<tr><td><b>'+esc(themaName(k))+'</b></td><td>'+(q==='anliegen'?'Anliegen des Kunden':q==='vorschlag'?'aus einem Gesprächsansatz gewählt':'im Gespräch gewählt')+'</td><td>'+bedarfPill(b)+'</td></tr>'}).join('')+'</tbody></table>';
+  h+='<table class="ttab"><thead><tr><th>Thema</th><th>Woher</th><th>Stand</th></tr></thead><tbody>'+ks.map(function(k){var b=cur.bedarf[k]||'';if(km&&b==='vermutet')b='';var q=cur.themen[k].quelle;return '<tr><td><b>'+esc(themaName(k))+'</b></td><td>'+(q==='anliegen'?'Anliegen des Kunden':q==='zusammenhang'?'im Überblick gemeinsam gewählt':q==='vorschlag'?'aus einem Gesprächsansatz gewählt':'im Gespräch gewählt')+'</td><td>'+bedarfPill(b)+'</td></tr>'}).join('')+'</tbody></table>';
+  h+=felderErgebnis(km);
   ks.forEach(function(k){var R=antwortZeilen(k);if(R.length)h+='<div class="ds-card"><div class="ds-cap">'+esc(themaName(k))+': wesentliche Angaben</div>'+pfFacts(R)+'</div>'});
   h+='<p class="fine-s">Die Zahlen stammen aus den Eingaben und Rechnern der Beratung. Ein Thema gilt erst als bestätigt, wenn der Kunde es so gesagt hat.</p></div>';
   var of=sessionOffen(cur);
@@ -4839,6 +4875,8 @@ function dokuReport(b){
   b.push({t:'p',text:'Anliegen: '+(cur.anliegen?themaName(cur.anliegen):'nicht angegeben')+(cur.anliegenText?'. In Ihren Worten: „'+cur.anliegenText+'“':'')+'.'});
   var rows=ks.map(function(k){var v=cur.bedarf[k]||'';if(v==='vermutet')v='';return [themaName(k),pfLbl(BEDARF,v)||'noch offen']});
   if(rows.length)b.push({t:'table',head:['Thema','Stand'],w:[0.6,0.4],rows:rows});
+  var fg=felderGeklaert().filter(function(x){return x.e.status!=='angesprochen'||!x.e.jetzt});
+  if(fg.length){b.push({t:'h',text:'Weitere Lebensbereiche, über die wir gesprochen haben'});b.push({t:'table',head:['Bereich','Vereinbart'],w:[0.6,0.4],rows:fg.map(function(x){var wv=x.e.wv&&db.todos.find(function(t){return t.id===x.e.wv});return [x.f.t,(x.e.jetzt?'heute besprochen':FSTATUS_K[feldStatusVon(cur,x.k)]||'')+(wv?', Termin ab '+fmtFull(wv.due):'')]})})}
   var d=cur.doku,of=sessionOffen(cur);
   if(d.vereinbarungen.trim()){b.push({t:'h',text:'Vereinbarungen'});b.push({t:'p',text:d.vereinbarungen.trim()})}
   if(of.length){b.push({t:'h',text:'Offene Fragen'});b.push({t:'bul',items:of})}
@@ -4863,7 +4901,7 @@ function bsAct(act,btn){
     case 'bs-kende':openSheet('<h3>Kundenmodus beenden?</h3><p>Danach werden interne Notizen, Einschätzungen und Hinweise wieder angezeigt. Bitte erst beenden, wenn der Kunde nicht mehr auf den Bildschirm schaut.</p><div class="btnrow"><button class="btn" data-act="close">Im Kundenmodus bleiben</button><button class="btn primary" data-act="bs-kende-ok">Beratermodus anzeigen</button></div>');return;
     case 'bs-kende-ok':cur.modus='berater';closeSheet();sessSave();renderTalk();return;
     case 'bs-anl':{var an=btn.dataset.a;if(cur.anliegen&&cur.themen[cur.anliegen]&&cur.themen[cur.anliegen].quelle==='anliegen'&&cur.anliegen!==an)cur.themen[cur.anliegen].quelle='gewaehlt';cur.anliegen=an;cur.themen[an]=cur.themen[an]||{ts:Date.now()};cur.themen[an].quelle='anliegen';syncMods();sessSave();renderTalk(true);return}
-    case 'bs-thema':{var t=btn.dataset.a;if(cur.themen[t]){if(t===cur.anliegen){toast('Das Anliegen bleibt Teil der Beratung.');return}delete cur.themen[t]}else{var vor=btn.classList.contains('chip');cur.themen[t]={quelle:vor?'vorschlag':'gewaehlt',ts:Date.now()}}syncMods();sessSave();renderTalk(true);return}
+    case 'bs-thema':{var t=btn.dataset.a;uebAdd=!!btn.closest('.ueb-add');if(cur.themen[t]){if(t===cur.anliegen){toast('Das Anliegen bleibt Teil der Beratung.');return}delete cur.themen[t]}else{var vor=btn.classList.contains('chip');cur.themen[t]={quelle:vor?'vorschlag':'gewaehlt',ts:Date.now()}}syncMods();sessSave();renderTalk(true);return}
     case 'bs-bedarf':{var kk=btn.dataset.k,v=btn.dataset.v;cur.bedarf[kk]=cur.bedarf[kk]===v?'':v;sessSave();renderTalk(true);return}
     case 'bs-offen-add':{var inp=$('bs-ofq'),tx=inp?inp.value.trim():'';if(!tx)return;var er=checkText(tx);if(er){toast(er);return}cur.offen.push({id:uid(),t:tx.slice(0,160),k:btn.dataset.k||'',done:false});sessSave();renderTalk(true);return}
     case 'bs-offen-t':{var o=cur.offen.find(function(x){return x.id===btn.dataset.id});if(o){o.done=!o.done;sessSave();renderTalk(true)}return}
@@ -4873,6 +4911,12 @@ function bsAct(act,btn){
       if(nx&&cur.kunde){var ex=db.todos.some(function(x){return x.kunde===cur.kunde&&x.text==='Nächster Schritt: '+nx&&!x.done});if(!ex)db.todos.push({id:uid(),kunde:cur.kunde,text:('Nächster Schritt: '+nx).slice(0,300),due:adv.wvDays&&adv.wvDays!=='0'?addDaysIso(todayIso(),Number(adv.wvDays)):addDaysIso(todayIso(),14),done:false,ts:Date.now()})}
       cur.status='abgeschlossen';cur.erledigt.unterlage=1;cur.erledigt.ergebnis=1;sessSave();var kd=cur.kunde;cur=null;adv=null;talkOpen=false;document.body.classList.remove('in-bs');
       if(kd){kundeAkt=kd;tab='kunde'}else tab='beratung';render();toast('Beratung abgeschlossen'+(nx&&kd?', nächster Schritt als Aufgabe angelegt':''));return}
+    case 'bs-fopen':{var fk=btn.dataset.k;uebOffen=uebOffen===fk?'':fk;if(uebOffen&&kmode()&&feldStatus(fk)==='erkannt'){felderObj()[fk].status='angesprochen';felderObj()[fk].ts=Date.now();sessSave()}renderTalk(true);return}
+    case 'bs-feld':feldSetzen(btn.dataset.k,btn.dataset.s);sessSave();renderTalk(true);return;
+    case 'bs-fwv':feldWv(btn.dataset.k,btn.dataset.m);save();sessSave();renderTalk(true);return;
+    case 'bs-fwv-del':{var fe=felderObj()[btn.dataset.k];if(fe&&fe.wv){db.todos=db.todos.filter(function(x){return x.id!==fe.wv||x.done});fe.wv=''}save();sessSave();renderTalk(true);return}
+    case 'bs-fokus':{c=curStep();cur.erledigt.themen=1;cur.fokus=Object.keys(felderObj()).some(function(x){return felderObj()[x].jetzt})?'':'anliegen';var ix=c.L.map(function(x){return x.key}).indexOf('themen');sessSave();if(ix>=0&&ix<c.L.length-1)geheZu(c.L[ix+1].key);return}
+    case 'bs-aend':{var A=anlassObj().aenderung,ak=btn.dataset.k,ai=A.indexOf(ak);if(ai>=0)A.splice(ai,1);else A.push(ak);sessSave();renderTalk(true);return}
     case 'bs-lex':openLexThema(btn.dataset.k);return;
     case 'bs-lexe':openLexEintrag(btn.dataset.id,true);return;
     case 'bs-mailende':mailAdv=false;adv=null;render();return;
@@ -4880,14 +4924,211 @@ function bsAct(act,btn){
 }
 document.addEventListener('input',function(ev){
   var t=ev.target;if(!cur||!t.dataset)return;
-  if(t.dataset.bs!==undefined){var p=t.dataset.bs,v=t.value;if(p==='kunde'){v=v.trim().toUpperCase();cur.kunde=v;adv.kunde=v}else setp(cur,p,v);sessDirty();return}
+  if(t.dataset.bs!==undefined){var p=t.dataset.bs,v=t.value;if(p==='kunde'){v=v.trim().toUpperCase();cur.kunde=v;adv.kunde=v}else{if(/^anlass\./.test(p))anlassObj();setp(cur,p,v)}sessDirty();return}
   if(t.dataset.bsa!==undefined){var q=t.dataset.bsa.split('.');if(!cur.antworten[q[0]])cur.antworten[q[0]]={};cur.antworten[q[0]][q[1]]=t.value;sessDirty();return}
   if(t.dataset.adv!==undefined||t.dataset.sig!==undefined)sessDirty();
 });
 document.addEventListener('change',function(ev){if(cur&&ev.target.dataset&&ev.target.dataset.adv!==undefined)sessDirty()});
 document.addEventListener('click',function(){if(cur)sessDirty()});
 /* Im Kundenmodus erlaubte Aktionen: nur Bedienung der Beratung selbst */
-var KMODE_OK=/^(bs-(go|next|prev|anl|thema|bedarf|offen-add|offen-t|gesehen|kende|kende-ok|lex|lexe)|adv-(pfset|pfopt|pfoff|pfp|ue|ent|wish|grp|wenn|leben|row-add|row-del|an-add|an-del|kvl-add|kvl-del|fp-from-tax)|ganz-set|ev-set|talk-jump|setdate|close|lexk-.*)$/;
+var KMODE_OK=/^(bs-(go|next|prev|anl|thema|bedarf|offen-add|offen-t|gesehen|kende|kende-ok|lex|lexe|fopen|feld|fokus|aend)|adv-(pfset|pfopt|pfoff|pfp|ue|ent|wish|grp|wenn|leben|row-add|row-del|an-add|an-del|kvl-add|kvl-del|fp-from-tax)|ganz-set|ev-set|talk-jump|setdate|close|lexk-.*)$/;
+
+/* ===== ueberblick.js ===== */
+/* ================= Persönlicher Überblick: vom Anliegen zu den Zusammenhängen ================= */
+/* Zeigt wenige, begründete Lebensbereiche, die mit dem Anliegen zusammenhängen KÖNNEN.
+   Ein Bereich ist zunächst nur ein möglicher Gesprächsansatz. Erst nach der Erklärung entscheidet
+   der Kunde: jetzt besprechen, später, oder heute nicht vertiefen. Nichts wird als Lücke markiert. */
+IC.home=IC.home||'<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10M10 20v-6h4v6"/>';
+IC.bank=IC.bank||'<path d="M3 10l9-6 9 6M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 20h18"/>';
+IC.wallet=IC.wallet||'<rect x="3" y="6" width="18" height="14" rx="2"/><path d="M3 10h18M16 15h2"/>';
+IC.sun=IC.sun||'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>';
+IC.heart=IC.heart||'<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/>';
+IC.trend=IC.trend||'<path d="M3 17l6-6 4 4 8-8M15 7h6v6"/>';
+IC.bulb=IC.bulb||'<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/>';
+var FELDER={
+ zuhause:{t:'Mein Zuhause rundum schützen',ic:'home',thema:'sach',
+  nutzen:'Neben dem Gebäude gehören die Einrichtung, Gefahren wie Starkregen und die Haftung als Eigentümer zum Schutz des Zuhauses.',
+  bezug:'Das Zuhause ist meist der größte Sachwert. Entscheidend ist, ob die Absicherung zum heutigen Wert und zum Wohnort passt.',
+  frage:'Welche Gefahren gibt es an Ihrem Wohnort, und wann wurde der Wert Ihres Hausrats zuletzt angesehen?',fehlt:['Wohnfläche und Ausstattung','Gefahren am Wohnort, etwa Starkregen','bestehende Verträge']},
+ finanzierung:{t:'Meine Finanzierung absichern',ic:'bank',thema:'arbeit',
+  nutzen:'Wenn ein großer Teil des Einkommens für die Finanzierung gebraucht wird, kann ein längerer Einkommensausfall auch die Finanzierung belasten.',
+  bezug:'Laufende Raten hängen am Einkommen, unabhängig davon, wie es einem gesundheitlich geht.',
+  frage:'Wie gut könnten Sie Ihre laufende Finanzierung weiter bedienen, wenn Ihr Einkommen für längere Zeit deutlich sinken würde?',fehlt:['Höhe der monatlichen Rate','wer zum Haushaltseinkommen beiträgt','bestehende Absicherungen']},
+ familie:{t:'Meine Familie berücksichtigen',ic:'family',thema:'familie',
+  nutzen:'Wenn andere vom eigenen Einkommen leben, stellt sich die Frage, wie es für sie weitergeht, wenn man selbst ausfällt.',
+  bezug:'Viele Entscheidungen betreffen nicht nur den Kunden selbst, sondern auch Partner und Kinder.',
+  frage:'Was müsste für Ihre Familie weiterlaufen, wenn Ihnen etwas zustößt?',fehlt:['wer finanziell abhängig ist und wie lange','gesetzliche und bestehende Leistungen für Hinterbliebene']},
+ reserven:{t:'Größere Ausgaben einplanen',ic:'wallet',thema:'anlage',
+  nutzen:'Reparaturen, Modernisierungen oder ein neues Auto kommen oft nicht planbar. Eine Rücklage verschafft Spielraum.',
+  bezug:'Auch gut abgesicherte Haushalte tragen Selbstbeteiligungen und Kosten, die keine Versicherung übernimmt.',
+  frage:'Wie würden Sie heute eine größere, unerwartete Ausgabe bezahlen?',fehlt:['vorhandene Rücklagen','geplante größere Ausgaben']},
+ einkommen:{t:'Mein Einkommen absichern',ic:'briefcase',thema:'arbeit',
+  nutzen:'Das Einkommen finanziert den Alltag und die Pläne. Wichtig ist, was weiterläuft, wenn man länger nicht arbeiten kann.',
+  bezug:'Fast alle Pläne setzen voraus, dass das Einkommen weiter fließt.',
+  frage:'Wie lange könnten Sie Ihre laufenden Ausgaben tragen, wenn Ihr Einkommen deutlich sinkt?',fehlt:['Netto-Einkommen und feste Ausgaben','Angaben aus der Renteninformation zur Erwerbsminderung','bestehende Absicherungen']},
+ ruhestand:{t:'Meinen Ruhestand planen',ic:'sun',thema:'alter',
+  nutzen:'Die gesetzliche Rente deckt meist nur einen Teil des heutigen Einkommens. Je früher man plant, desto mehr Spielraum bleibt.',
+  bezug:'Was heute entschieden wird, wirkt oft bis in den Ruhestand.',
+  frage:'Wie möchten Sie im Ruhestand leben, und wissen Sie schon, was Ihre Rente dafür hergibt?',fehlt:['Renteninformation','gewünschtes Einkommen im Ruhestand']},
+ gesundheit:{t:'Gesundheit und Wahlmöglichkeiten',ic:'heart',thema:'zusatz',
+  nutzen:'Bei bestimmten Gesundheitsleistungen können Eigenanteile entstehen. Entscheidend ist, welche Leistungen Ihnen wichtig sind und welche Kosten Sie selbst tragen möchten.',
+  bezug:'Gesundheit betrifft alle Lebensphasen, die eigenen Prioritäten sind dabei sehr verschieden.',
+  frage:'Bei welchen Gesundheitsleistungen wären Ihnen zusätzliche Leistungen oder mehr Wahlmöglichkeiten besonders wichtig?',fehlt:['heutige Krankenversicherung','eigene Prioritäten, etwa Zahn, Brille, Krankenhaus']},
+ pflege:{t:'Für den Pflegefall vorsorgen',ic:'users',thema:'pflege',
+  nutzen:'Die Pflegeversicherung zahlt feste Beträge. Was darüber hinausgeht, kommt aus Rente und Vermögen.',
+  bezug:'Pflege betrifft Einkommen, Vermögen und die Familie gleichermaßen.',
+  frage:'Was wäre Ihnen wichtig, wenn Sie einmal Hilfe im Alltag bräuchten?',fehlt:['Rente oder Einkommen im Alter','Wünsche zur Pflegeform','wer helfen könnte']},
+ vollmacht:{t:'Entscheidungen im Ernstfall regeln',ic:'doc',thema:'vorsorge',
+  nutzen:'Wenn man selbst nicht entscheiden kann, braucht jemand eine Vollmacht. Ehepartner dürfen sich ohne Vollmacht nur eingeschränkt vertreten.',
+  bezug:'Ohne Vollmacht kann im Ernstfall niemand ohne Weiteres für Konten, Verträge oder Behandlungen entscheiden.',
+  frage:'Wer soll für Sie entscheiden, wenn Sie es einmal nicht selbst können, und weiß diese Person davon?',fehlt:['vorhandene Vollmachten und Verfügungen','Vertrauensperson']},
+ vermoegen:{t:'Vermögen aufbauen und weitergeben',ic:'trend',thema:'anlage',
+  nutzen:'Geld, das länger nicht gebraucht wird, kann für ein Ziel arbeiten. Welche Anlage passt, hängt von Ziel, Zeit und Risikobereitschaft ab.',
+  bezug:'Ziele lassen sich leichter erreichen, wenn klar ist, wofür und bis wann Geld gebraucht wird.',
+  frage:'Wofür möchten Sie in den nächsten Jahren Geld zurücklegen?',fehlt:['Ziel und Zeitraum','Umgang mit Schwankungen']},
+ unfall:{t:'Folgen eines Unfalls',ic:'bandage',thema:'unfall',
+  nutzen:'Die gesetzliche Unfallversicherung gilt bei der Arbeit und auf dem Arbeitsweg, nicht in der Freizeit.',
+  bezug:'Ein schwerer Unfall kann Wohnung, Mobilität und Einkommen zugleich verändern.',
+  frage:'Was würde sich in Ihrem Alltag ändern, wenn Sie nach einem Unfall dauerhaft eingeschränkt wären?',fehlt:['Hobbys und Alltag','bestehende Absicherungen']}
+};
+var ANL_UEB={
+ sach:{titel:'Mein Zuhause und meine finanzielle Sicherheit',mitte:'Mein Zuhause',felder:['zuhause','finanzierung','familie','reserven','unfall']},
+ alter:{titel:'Mein Ruhestand und was ihn trägt',mitte:'Mein Ruhestand',felder:['einkommen','pflege','vermoegen','familie','vollmacht']},
+ arbeit:{titel:'Mein Einkommen und was davon abhängt',mitte:'Mein Einkommen',felder:['familie','finanzierung','ruhestand','unfall']},
+ pflege:{titel:'Selbstbestimmt älter werden',mitte:'Pflege und Selbstbestimmung',felder:['vollmacht','familie','ruhestand','gesundheit']},
+ familie:{titel:'Meine Familie und ihre Sicherheit',mitte:'Meine Familie',felder:['einkommen','finanzierung','vollmacht','reserven']},
+ kranken:{titel:'Meine Gesundheit und meine Wahlmöglichkeiten',mitte:'Meine Gesundheit',felder:['gesundheit','pflege','einkommen','unfall']},
+ zusatz:{titel:'Meine Gesundheit und meine Wahlmöglichkeiten',mitte:'Meine Gesundheit',felder:['pflege','einkommen','unfall']},
+ unfall:{titel:'Was nach einem Unfall zählt',mitte:'Unfallfolgen',felder:['einkommen','familie','reserven','zuhause']},
+ anlage:{titel:'Mein Vermögen und meine Ziele',mitte:'Mein Vermögen',felder:['ruhestand','reserven','vollmacht','familie']},
+ vorsorge:{titel:'Für den Ernstfall vorgesorgt',mitte:'Vorsorge für den Ernstfall',felder:['pflege','familie','vermoegen','ruhestand']},
+ check:{titel:'Mein persönlicher Überblick',mitte:'Meine Situation',felder:['einkommen','familie','ruhestand','zuhause','pflege','vollmacht','gesundheit']}
+};
+ANL_UEB.individuell=ANL_UEB.check;
+var BEZUG={
+ 'sach:finanzierung':'Haus und Finanzierung gehören zusammen: Die Rate läuft weiter, auch wenn sich das Einkommen ändert.',
+ 'sach:familie':'Das Zuhause ist meist auch der Ort der Familie. Wichtig ist, ob alle darin wohnen bleiben könnten, wenn einem etwas zustößt.',
+ 'sach:reserven':'Ein Haus braucht laufend Pflege. Reparaturen und Selbstbeteiligungen kommen nicht planbar.',
+ 'sach:zuhause':'Neben dem Gebäude gehören die Einrichtung, Elementargefahren und die Haftung als Eigentümer zum Schutz des Zuhauses.',
+ 'alter:einkommen':'Wer für den Ruhestand spart, braucht dafür bis dahin ein laufendes Einkommen.',
+ 'alter:pflege':'Im Ruhestand stellt sich oft auch die Frage, was im Pflegefall aus Rente und Vermögen bezahlt werden müsste.',
+ 'pflege:vollmacht':'Im Pflegefall muss oft jemand anderes für den Kunden handeln dürfen.',
+ 'arbeit:finanzierung':'Ein Einkommensausfall trifft zuerst die festen Verpflichtungen, etwa eine Finanzierung.',
+ 'familie:einkommen':'Das Einkommen ist meist die Grundlage für den Alltag der Familie.'
+};
+var AENDERUNG=[['haus','Hauskauf, Bau oder Umzug'],['heirat','Heirat oder Partnerschaft'],['kind','Kind'],['job','Jobwechsel oder Selbstständigkeit'],['ruhestand','Ruhestand rückt näher'],['eltern','Pflegefall in der Familie'],['erbe','Erbe oder Schenkung']];
+var FSTATUS=[['offen','noch nicht betrachtet'],['erkannt','möglicher Zusammenhang'],['angesprochen','mit dem Kunden angesprochen'],['bestaetigt','Bedarf gemeinsam bestätigt'],['spaeter','später besprechen'],['nein','heute nicht vertiefen']];
+var FSTATUS_K={erkannt:'Möglicher Zusammenhang',angesprochen:'Angesprochen',bestaetigt:'Gemeinsam bestätigt',spaeter:'Für später vorgemerkt',nein:'Heute nicht vertieft'};
+function anlassObj(){if(!cur.anlass)cur.anlass={wichtig:'',aenderung:[],fragen:''};return cur.anlass}
+function felderObj(){if(!cur.felder)cur.felder={};return cur.felder}
+/* Bewertet die Bereiche nur aus erfassten Angaben. Gründe werden wörtlich angezeigt. */
+function feldKandidaten(){
+  var def=ANL_UEB[cur.anliegen]||ANL_UEB.check,kd=adv.kd||{},A=anlassObj().aenderung||[],ae=function(x){return A.indexOf(x)>=0};
+  var kinder=parseInt(kd.kinder,10)||0,alter=parseInt(kd.alter,10)||0,partner=/verheiratet|Partnerschaft/.test(kd.fam||''),eig=kd.wohnen==='Eigentum',miete=kd.wohnen==='Miete',g=kd.gruppe;
+  return def.felder.map(function(k,i){
+    var s=10-i,gr=[],aus=false;
+    function plus(n,t){s+=n;if(t&&gr.indexOf(t)<0)gr.push(t)}
+    if(k==='finanzierung'){if(miete)aus=true;if(eig)plus(3,'Sie wohnen im eigenen Haus oder in der eigenen Wohnung.');if(ae('haus'))plus(4,'Sie haben kürzlich gekauft, gebaut oder sind umgezogen.');if(g==='rentner')s-=3}
+    if(k==='zuhause'){if(eig)plus(2,'Sie wohnen im eigenen Haus oder in der eigenen Wohnung.');if(ae('haus'))plus(3,'Sie haben kürzlich gekauft, gebaut oder sind umgezogen.')}
+    if(k==='reserven'){if(ae('haus'))plus(2,'Sie haben kürzlich gekauft, gebaut oder sind umgezogen.');if(eig)plus(1)}
+    if(k==='familie'){if(kinder>0)plus(3,'In Ihrem Haushalt leben Kinder.');if(partner)plus(2,'Sie leben in einer Ehe oder Partnerschaft.');if(ae('kind'))plus(4,'Sie haben Nachwuchs bekommen oder erwarten ein Kind.');if(ae('heirat'))plus(3,'Sie haben geheiratet oder leben jetzt in einer Partnerschaft.');if(!kinder&&!partner&&kd.fam)s-=3}
+    if(k==='einkommen'){if(g==='rentner')aus=true;if(/selbst/.test(kd.beruf||''))plus(2,'Sie sind selbstständig tätig.');if(ae('job'))plus(3,'Sie haben den Job gewechselt oder sich selbstständig gemacht.');if(g==='einsteiger')plus(3,'Sie stehen am Anfang des Berufslebens.')}
+    if(k==='ruhestand'){if(g==='rentner')aus=true;if(alter>=50&&alter<67)plus(2,'Bis zur Regelaltersgrenze sind es noch etwa '+(67-alter)+' Jahre.');if(ae('ruhestand'))plus(4,'Der Ruhestand rückt näher.');if(ae('job'))plus(1)}
+    if(k==='pflege'){if(g==='einsteiger')aus=true;if(g==='rentner')plus(3,'Sie sind im Ruhestand.');if(ae('eltern'))plus(4,'In Ihrer Familie gibt es einen Pflegefall.');if(alter>=55)plus(1)}
+    if(k==='vollmacht'){if(g==='einsteiger')s-=3;if(g==='rentner')plus(2,'Sie sind im Ruhestand.');if(ae('eltern'))plus(3,'In Ihrer Familie gibt es einen Pflegefall.');if(ae('heirat'))plus(1);if(ae('erbe'))plus(2,'Sie haben geerbt oder planen eine Schenkung.')}
+    if(k==='vermoegen'){if(ae('erbe'))plus(4,'Sie haben geerbt oder planen eine Schenkung.');if(ae('ruhestand'))plus(1)}
+    if(k==='gesundheit'&&g==='rentner')plus(1);
+    return {k:k,f:FELDER[k],s:s,gr:gr,aus:aus,bezug:BEZUG[cur.anliegen+':'+k]||FELDER[k].bezug};
+  }).filter(function(x){return !x.aus}).sort(function(a,b){return b.s-a.s});
+}
+function feldStatus(k){
+  var F=felderObj()[k],st=F?F.status:'offen',th=FELDER[k].thema;
+  if((st==='angesprochen'||st==='erkannt')&&cur.themen[th]&&cur.bedarf[th]==='bestaetigt')return 'bestaetigt';
+  return st||'offen';
+}
+function feldIstBesprochen(k){return cur.themen[FELDER[k].thema]&&felderObj()[k]&&felderObj()[k].jetzt}
+var uebOffen='',uebAdd=false;
+function ueberblickHtml(st){
+  var km=kmode(),def=ANL_UEB[cur.anliegen]||ANL_UEB.check,K=feldKandidaten(),F=felderObj(),kd=adv.kd||{};
+  var haupt=K.slice(0,4),mehr=K.slice(4);
+  K.forEach(function(x){if(!F[x.k])F[x.k]={status:'erkannt',ts:Date.now()}});
+  var offen=haupt.filter(function(x){var s=feldStatus(x.k);return s==='erkannt'||s==='angesprochen'}),geklaert=K.filter(function(x){var s=feldStatus(x.k);return s==='bestaetigt'||s==='spaeter'||s==='nein'||(F[x.k]&&F[x.k].jetzt)});
+  offen=offen.filter(function(x){return !(F[x.k]&&F[x.k].jetzt)});
+  var anz=haupt.filter(function(x){return feldStatus(x.k)!=='erkannt'}).length;
+  var lage=[];if(kd.gruppe&&GR[kd.gruppe])lage.push(GR[kd.gruppe].name);if(kd.alter)lage.push(kd.alter+' Jahre');if(kd.fam)lage.push(kd.fam);if(parseInt(kd.kinder,10))lage.push(kd.kinder+(kd.kinder==='1'?' Kind':' Kinder'));if(kd.wohnen)lage.push(kd.wohnen);
+  (anlassObj().aenderung||[]).forEach(function(a){lage.push(pfLbl(AENDERUNG,a))});
+  var name=cur.anliegen==='individuell'&&cur.anliegenText?cur.anliegenText.slice(0,60):def.mitte;
+  var h='<header class="ueb-h"><p class="eyebrow">Ihr persönlicher Überblick</p><h2>'+esc(def.titel)+'</h2><p class="lead">Ausgangspunkt ist Ihr Anliegen. Daneben stehen wenige Bereiche, die damit zusammenhängen können. Ob und wann wir darüber sprechen, entscheiden Sie.</p></header>';
+  h+='<div class="ueb"><section class="ueb-anchor" aria-label="Ihr Anliegen"><div class="ueb-ill" aria-hidden="true">'+themaIll(cur.anliegen||'individuell')+'</div><div class="ueb-ab"><p class="eyebrow">Ihr Anliegen</p><h3>'+esc(name)+'</h3>'+(cur.anliegenText?'<p class="ueb-q">„'+esc(cur.anliegenText)+'“</p>':'<p class="muted">'+esc(cur.anliegen?themaName(cur.anliegen):'Noch kein Anliegen gewählt')+'</p>')+
+    (lage.length?'<div class="ueb-lage"><span class="eyebrow">Ihre Situation</span><ul>'+lage.map(function(l){return '<li>'+esc(l)+'</li>'}).join('')+'</ul></div>':'<p class="fine-s">Mit Angaben zur Lebenssituation werden die Zusammenhänge genauer.</p>')+
+    '<button class="btn primary block" data-act="bs-fokus">'+ico('arrow',18)+'Mit dem Anliegen weitermachen</button></div></section>';
+  h+='<section class="ueb-felder" aria-label="Mögliche Zusammenhänge"><div class="ueb-fh"><h3>Was damit zusammenhängen kann</h3><span class="ueb-prog"><span class="bar"><i style="width:'+(haupt.length?Math.round(anz/haupt.length*100):0)+'%"></i></span>'+anz+' von '+haupt.length+' angesprochen</span></div>';
+  h+=offen.length?'<ol class="fcards">'+offen.map(function(x){return feldKarte(x,haupt.indexOf(x)+1)}).join('')+'</ol>':'<div class="empty-s"><p>Alle Bereiche sind geklärt. Unten sehen Sie, was vereinbart ist.</p></div>';
+  if(mehr.length&&!km)h+='<details class="adv"><summary>Weitere mögliche Zusammenhänge ('+mehr.filter(function(x){return feldStatus(x.k)==='erkannt'}).length+')</summary><ol class="fcards">'+mehr.filter(function(x){return feldStatus(x.k)==='erkannt'||feldStatus(x.k)==='angesprochen'}).map(function(x){return feldKarte(x,0)}).join('')+'</ol></details>';
+  h+='</section></div>';
+  if(geklaert.length)h+='<section class="ueb-done"><h3>Bereits geklärt</h3><ul>'+geklaert.map(function(x){var s=F[x.k]&&F[x.k].jetzt&&feldStatus(x.k)!=='bestaetigt'?'jetzt':feldStatus(x.k),wv=F[x.k]&&F[x.k].wv?db.todos.find(function(t){return t.id===F[x.k].wv}):null;
+    return '<li><span class="fd-ic" aria-hidden="true">'+ico(x.f.ic,18)+'</span><span class="fd-t"><b>'+esc(x.f.t)+'</b>'+(wv?'<small>Wiedervorlage am '+esc(fmtFull(wv.due))+'</small>':'')+'</span><span class="stat-pill s-'+({jetzt:'info',bestaetigt:'ok',spaeter:'warn',nein:'muted'})[s]+'">'+(s==='jetzt'?'Wird heute besprochen':FSTATUS_K[s])+'</span>'+
+      (s==='spaeter'&&!wv&&!km?'<span class="fd-wv">Wiedervorlage vereinbart? '+[[1,'in 1 Monat'],[3,'in 3 Monaten'],[6,'in 6 Monaten']].map(function(m){return '<button class="lnk" data-act="bs-fwv" data-k="'+x.k+'" data-m="'+m[0]+'">'+m[1]+'</button>'}).join('')+'</span>':'')+
+      (wv&&!km?'<button class="lnk" data-act="bs-fwv-del" data-k="'+x.k+'">Wiedervorlage entfernen</button>':'')+
+      '<button class="lnk" data-act="bs-feld" data-k="'+x.k+'" data-s="erkannt">Ändern</button></li>'}).join('')+'</ul></section>';
+  var nochOffen=offen.length>0;
+  h+='<div class="ueb-stay"><p>'+(nochOffen?'Wir können heute gerne bei '+esc(cur.anliegen?themaName(cur.anliegen):'Ihrem Anliegen')+' bleiben. Wenn Sie möchten, sehen wir uns einen der anderen Punkte bei einem späteren Termin an.':'Die Themen für heute stehen fest.')+'</p><button class="btn" data-act="bs-fokus">'+(nochOffen?'Beim Anliegen bleiben':'Weiter zur Beratung')+'</button></div>';
+  if(!km)h+='<details class="adv ueb-add"'+(uebAdd?' open':'')+'><summary>Thema direkt hinzufügen</summary><p class="hint-t">Für Folgetermine oder wenn der Kunde ein Thema selbst anspricht.</p><div class="tcards small">'+THEMEN.map(function(t){var on=!!cur.themen[t[0]];return '<button class="tcard'+(on?' on':'')+'" data-act="bs-thema" data-a="'+t[0]+'" aria-pressed="'+on+'"><span class="tc-ill">'+themaIll(t[0])+'</span><span class="tc-b"><strong>'+esc(t[1])+(t[0]===cur.anliegen?' <em class="anl-tag">Anliegen</em>':'')+'</strong><span>'+esc(t[2])+'</span></span><span class="tc-check" aria-hidden="true">'+(on?'✓':'')+'</span></button>'}).join('')+'</div></details>';
+  return h;
+}
+function feldKarte(x,nr){
+  var k=x.k,f=x.f,offen=uebOffen===k,s=feldStatus(k),km=kmode();
+  var h='<li class="fcard'+(offen?' open':'')+'"><button class="fc-h" data-act="bs-fopen" data-k="'+k+'" aria-expanded="'+offen+'"><span class="fc-ic" aria-hidden="true">'+ico(f.ic,22)+'</span><span class="fc-t"><b>'+esc(f.t)+'</b><span>'+esc(f.nutzen)+'</span></span>'+(s==='angesprochen'?'<span class="stat-pill s-info">Angesprochen</span>':'')+'<span class="fc-chev" aria-hidden="true"></span></button>';
+  if(offen){
+    h+='<div class="fc-b"><dl class="fc-d"><div><dt>Zusammenhang mit Ihrem Anliegen</dt><dd>'+esc(x.bezug)+'</dd></div>'+
+      '<div><dt>Aus Ihren Angaben</dt><dd>'+(x.gr.length?'<ul>'+x.gr.map(function(g){return '<li>'+esc(g)+'</li>'}).join('')+'</ul>':'Dazu liegen noch keine Angaben vor. Ob das für Sie zutrifft, klärt das Gespräch.')+'</dd></div>'+
+      '<div><dt>Dafür wäre noch zu klären</dt><dd>'+esc(f.fehlt.join(', '))+'</dd></div></dl>'+
+      '<blockquote class="fc-q"><span>Offene Frage</span>'+esc(f.frage)+'</blockquote>'+
+      '<p class="fine-s">Ein möglicher Gesprächsansatz, kein festgestellter Bedarf und keine Empfehlung.</p>'+
+      '<div class="fc-a">'+(s==='erkannt'&&!km?'<button class="btn small" data-act="bs-feld" data-k="'+k+'" data-s="angesprochen">Angesprochen</button>':'')+
+      '<button class="btn small primary" data-act="bs-feld" data-k="'+k+'" data-s="jetzt">Jetzt besprechen</button><button class="btn small" data-act="bs-feld" data-k="'+k+'" data-s="spaeter">Später besprechen</button><button class="btn small" data-act="bs-feld" data-k="'+k+'" data-s="nein">Heute nicht vertiefen</button></div></div>';
+  }
+  return h+'</li>';
+}
+function feldSetzen(k,s){
+  var F=felderObj(),e=F[k]||(F[k]={status:'erkannt',ts:Date.now()}),th=FELDER[k].thema;
+  var war=e.jetzt;
+  if(s==='jetzt'){e.status='angesprochen';e.jetzt=true;if(!cur.themen[th])cur.themen[th]={quelle:'zusammenhang',feld:k,ts:Date.now()}}
+  else{
+    e.status=s;e.jetzt=false;
+    if(war&&cur.themen[th]&&cur.themen[th].quelle==='zusammenhang'&&cur.themen[th].feld===k&&th!==cur.anliegen)delete cur.themen[th];
+    if(s==='erkannt'&&e.wv){db.todos=db.todos.filter(function(t){return t.id!==e.wv||t.done});e.wv=''}
+  }
+  e.ts=Date.now();
+  if(s!=='angesprochen'&&s!=='erkannt')uebOffen='';
+  syncMods();
+}
+function feldWv(k,mon){
+  var e=felderObj()[k];if(!e)return;
+  if(!cur.kunde){toast('Für eine Wiedervorlage bitte zuerst die Kundennummer eintragen (Schritt Anliegen).');return}
+  var t={id:uid(),kunde:cur.kunde,text:('Später besprechen: '+FELDER[k].t).slice(0,140),due:addMonthsIso(todayIso(),Number(mon)),done:false,ts:Date.now(),wait:false};
+  db.todos.push(t);e.wv=t.id;toast('Wiedervorlage am '+fmtFull(t.due)+' angelegt');
+}
+function felderGeklaert(s){var F=(s||cur).felder||{};return Object.keys(F).filter(function(k){return FELDER[k]&&F[k].status&&F[k].status!=='erkannt'&&F[k].status!=='offen'}).map(function(k){return {k:k,f:FELDER[k],e:F[k]}})}
+function anlassForm(){
+  var a=anlassObj();
+  return '<div class="anlass"><h3>Kurz nachgefragt</h3>'+
+    '<label class="fl"><span>Was möchte der Kunde heute klären?</span><textarea data-bs="anliegenText" maxlength="400" rows="2" placeholder="z. B. „Ich möchte meine Gebäudeversicherung überprüfen.“">'+esc(cur.anliegenText)+'</textarea></label>'+
+    '<label class="fl"><span>Was ist ihm dabei besonders wichtig? <em class="opt">optional</em></span><input type="text" data-bs="anlass.wichtig" maxlength="160" value="'+esc(a.wichtig)+'" placeholder="z. B. dass auch Starkregen abgedeckt ist"></label>'+
+    '<div class="ds-q" style="margin-top:14px"><span>Hat sich an der Lebenssituation etwas verändert? <em class="opt">optional, mehrere möglich</em></span><div class="lwc">'+AENDERUNG.map(function(o){var on=a.aenderung.indexOf(o[0])>=0;return '<button class="chip" data-act="bs-aend" data-k="'+o[0]+'" aria-pressed="'+on+'">'+esc(o[1])+'</button>'}).join('')+'</div></div>'+
+    '<label class="fl"><span>Konkrete Fragen oder Unsicherheiten <em class="opt">optional</em></span><input type="text" data-bs="anlass.fragen" maxlength="200" value="'+esc(a.fragen)+'" placeholder="z. B. Ist der Wert des Hauses noch richtig versichert?"></label></div>';
+}
+function feldStatusVon(s,k){var F=(s.felder||{})[k],st=F?F.status:'offen',th=FELDER[k].thema;if((st==='angesprochen'||st==='erkannt')&&s.themen&&s.themen[th]&&(s.bedarf||{})[th]==='bestaetigt')return 'bestaetigt';return st||'offen'}
+/* Zusammenfassung: nur Bereiche, über die tatsächlich gesprochen wurde. „Möglicher Zusammenhang“ erscheint nie. */
+function felderErgebnis(km){
+  var G=felderGeklaert();
+  var h='<div class="ds-card"><div class="ds-cap">Weitere Lebensbereiche aus dem Überblick</div>';
+  if(!G.length)return h+'<p class="muted">'+(cur.fokus==='anliegen'?'Wir sind heute beim Anliegen geblieben. Weitere Bereiche wurden nicht vertieft.':'Es wurden keine weiteren Bereiche angesprochen.')+'</p></div>';
+  h+='<ul class="fd-list">'+G.map(function(x){var s=x.e.jetzt&&feldStatusVon(cur,x.k)!=='bestaetigt'?'jetzt':feldStatusVon(cur,x.k),wv=x.e.wv?db.todos.find(function(t){return t.id===x.e.wv}):null;
+    return '<li><b>'+esc(x.f.t)+'</b><span class="stat-pill s-'+({jetzt:'info',angesprochen:'info',bestaetigt:'ok',spaeter:'warn',nein:'muted'})[s]+'">'+(s==='jetzt'?'Heute besprochen':FSTATUS_K[s])+'</span>'+(wv?'<small>Wiedervorlage am '+esc(fmtFull(wv.due))+'</small>':s==='spaeter'&&!km?'<small>Noch kein Termin vereinbart</small>':'')+'</li>'}).join('')+'</ul>';
+  if(cur.fokus==='anliegen')h+='<p class="fine-s">Auf Wunsch des Kunden ist die Beratung heute beim Anliegen geblieben.</p>';
+  return h+'</div>';
+}
 
 /* ===== wissen-inhalte.js ===== */
 /* ================= Beraterwissen: Startinhalte ================= */

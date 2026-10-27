@@ -7,6 +7,7 @@ const check = pruefer();
   await geheZu(page, 'beratung');
   await page.click('.tcard[data-a="check"]');
   await page.click('[data-act="bs-go"][data-k="themen"]');
+  await page.click('summary:has-text("Thema direkt hinzufügen")');
   for (const t of ['alter', 'arbeit', 'pflege', 'familie', 'kranken', 'zusatz', 'unfall', 'sach', 'anlage', 'vorsorge', 'individuell']) await page.click(`.tcard[data-act="bs-thema"][data-a="${t}"]`);
   const keys = await page.locator('.bs-i').evaluateAll(b => b.map(x => x.dataset.k));
   for (const k of keys) await page.click(`[data-act="bs-go"][data-k="${k}"]`);
