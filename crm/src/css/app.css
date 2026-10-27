@@ -278,3 +278,6 @@ body.fbmode{cursor:crosshair}
 .opt-c dl{margin:0}.opt-c dl div{padding:6px 0;border-top:1px solid var(--line)}.opt-c dt{font-size:12px;font-weight:650;color:var(--muted)}.opt-c dd{margin:2px 0 0;font-size:14px}
 .opt-c .rel{background:var(--primary-soft);margin:0 -14px;padding:6px 14px}
 @container (max-width:600px){.bs-body .tw:has(.ds-matrix){display:none}.opt-cards{display:block}}
+
+.trfb{margin:0 0 16px;border-color:var(--primary)}.trfb-g{margin:0 0 12px;font-size:16px}.trfb-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}.trfb h4{margin:0 0 6px;font-size:14px;text-transform:none;letter-spacing:0;color:var(--ink)}
+@media(max-width:620px){.trfb-2{grid-template-columns:1fr}}
