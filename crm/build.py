@@ -3,8 +3,8 @@
 Reihenfolge: kopf.html, CSS-Dateien, koerper.html, JS-Dateien (in einer gemeinsamen Funktion), ende.html."""
 import pathlib
 SRC = pathlib.Path(__file__).parent / 'src'
-CSS = ['tokens.css', 'basis.css', 'app.css', 'beratung.css', 'wissen.css']
-JS = ['bestand.js', 'grafik.js', 'navigation.js', 'start.js', 'kunden.js', 'beratung.js','ueberblick.js','training.js', 'wissen-inhalte.js', 'wissen.js', 'zz-init.js']
+CSS = ['tokens.css', 'basis.css', 'app.css', 'beratung.css', 'wissen.css','zusammen.css']
+JS = ['bestand.js','akademie.js','zusatz.js','vorbereitung.js', 'grafik.js', 'navigation.js', 'start.js', 'kunden.js', 'beratung.js','ueberblick.js','training.js', 'wissen-inhalte.js', 'wissen.js', 'zz-init.js']
 def read(p): return (SRC / p).read_text(encoding='utf8')
 out = [read('kopf.html'), '<style>\n']
 for c in CSS:

@@ -37,7 +37,7 @@ function lexKarte(e){
 }
 function viewWissen(){
   var A=lexAll(),filt=lx.q||lx.sparte||lx.typ||lx.status||lx.fav;
-  var h='<div class="wtool"><label class="searchf big">'+ico('search',20)+'<input type="search" id="lx-q" value="'+esc(lx.q)+'" placeholder="Begriff, Frage, Kernaussage oder Paragraf suchen" autocomplete="off" aria-label="Beraterwissen durchsuchen"></label><button class="btn primary" data-act="lex-neu">'+ico('plus',18)+'Neuer Eintrag</button></div>';
+  var h=wissenSeg('wissen')+'<div class="wtool"><label class="searchf big">'+ico('search',20)+'<input type="search" id="lx-q" value="'+esc(lx.q)+'" placeholder="Begriff, Frage, Kernaussage oder Paragraf suchen" autocomplete="off" aria-label="Beraterwissen durchsuchen"></label><button class="btn primary" data-act="lex-neu">'+ico('plus',18)+'Neuer Eintrag</button></div>';
   h+='<div class="wfilter"><select data-lxf="sparte" aria-label="Sparte"><option value="">Alle Sparten</option>'+LEXSPARTEN.map(function(s){return '<option value="'+s[0]+'"'+(lx.sparte===s[0]?' selected':'')+'>'+esc(s[1])+'</option>'}).join('')+'</select>'+
     '<select data-lxf="typ" aria-label="Inhaltstyp"><option value="">Alle Inhaltstypen</option>'+LEXTYPEN.map(function(s){return '<option value="'+s[0]+'"'+(lx.typ===s[0]?' selected':'')+'>'+esc(s[1])+'</option>'}).join('')+'</select>'+
     '<select data-lxf="status" aria-label="Aktualität"><option value="">Jeder Status</option>'+LEXSTATUS.map(function(s){return '<option value="'+s[0]+'"'+(lx.status===s[0]?' selected':'')+'>'+esc(s[1])+'</option>'}).join('')+'<option value="alt"'+(lx.status==='alt'?' selected':'')+'>Zu aktualisieren oder älter als ein Jahr</option></select>'+

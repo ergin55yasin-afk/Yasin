@@ -120,6 +120,7 @@ function chIntro(id){
 }
 function viewChat(id){
   var c=CH[id],h='';
+  if(id==='wk')h+=wissenSeg('wissenki');
   if(id==='wk')h+='<div class="plbar"><button class="btn small" data-act="wk-edit">Einträge ('+wissenList().length+')</button></div>';
   if(id==='tr'){
     h+='<div class="plbar"><button class="chip" data-act="tr-mode" data-id="drill" aria-pressed="'+(trMode==='drill')+'">Einwandtrainer</button><button class="chip" data-act="tr-mode" data-id="rolle" aria-pressed="'+(trMode==='rolle')+'">Rollenspiel</button></div>';
@@ -183,6 +184,7 @@ function chPrompt(id){
   if(id==='cp')return 'Du bist der Copilot in einem CRM für einen Versicherungsvertreter (R&V, Zusammenarbeit mit einer Volksbank). Heute ist '+wd+', der '+T+' (Format YYYY-MM-DD). Kunden gibt es nur als Nummern. Regeln: Antworte kurz auf Deutsch (Sie-Form nicht nötig, duze den Nutzer). Lege Daten ausschließlich mit den bereitgestellten Werkzeugen an, nie erfunden. Fehlt eine Pflichtangabe (Kundennummer, Ablaufdatum), frage kurz nach, statt zu raten. Relative Datumsangaben („Freitag", „in zwei Wochen") rechnest du ab heute in YYYY-MM-DD um. Eine Rückmeldung, auf die der Nutzer wartet, ist eine Aufgabe mit wartet_auf_kunde=true. Wenn ein Name, eine Telefonnummer oder E-Mail vorkommt, lege nichts an und bitte um die Kundennummer. Gib keine Rechts- oder Steuerberatung. Bestätige nach dem Anlegen in einem Satz, was angelegt wurde, und weise bei einer verpassten Kündigungsfrist darauf hin.';
   if(id==='wk'){
     var W=wissenList().map(function(w){return '### '+w.titel+'\n'+w.text}).join('\n\n').slice(0,150000);
+    var AK=KN.filter(function(u){return !u.light&&u.s}).map(function(u){return '### Akademie: '+u.t+'\n'+u.s}).join('\n\n').slice(0,12000);W=W+(AK?'\n\n'+AK:'');
     return 'Du bist der Wissens-Assistent für einen Versicherungsvertreter. Beantworte Fragen nur anhand der folgenden Wissensdatenbank. Steht die Antwort nicht darin, sage das offen und schlage vor, einen Eintrag zu ergänzen; erfinde nichts. Nenne den Titel des Eintrags, aus dem du antwortest. Antworte kurz und auf Deutsch.\n\nWISSENSDATENBANK:\n'+(W||'(leer)');
   }
   return trPrompt();
@@ -373,7 +375,7 @@ function drRun(){
   var e=checkText(a);if(e){dr.err=e;render();return}
   dr.busy=true;dr.res=null;render();var ta=$('dr-a');if(ta)ta.value=a;
   getSample(function(sample){
-    if(!sample){dr.busy=false;dr.err='Die KI ist in dieser Ansicht nicht verfügbar. Öffne die Seite in Claude.';render();return}
+    if(!sample){dr.busy=false;var _l=exLocal(a,KN.filter(function(x){return x.e===dr.einw})[0]);dr.res={punkte:3,gut:_l.gut,besser:_l.besser,muster:_l.alt};render();return}
     var pr='Du bist Verkaufstrainer für einen Versicherungsvertreter (Zusammenarbeit mit einer Volksbank). Der Kunde sagt: „'+dr.einw+'". Der Berater antwortet: „'+a+'". Bewerte die Antwort streng aber fair nach: Verständnis zeigen, offene Frage stellen, Nutzen statt Preis, nächster Schritt. Antworte NUR als JSON: {"punkte":1-5,"gut":"1 Satz, was gut war","besser":"1 bis 2 Sätze, was konkret besser geht","muster":"eine kurze, natürliche Musterantwort in 2 bis 3 Sätzen, Du-Form des Beraters gegenüber dem Kunden mit Sie"}. Keine Floskeln, keine Namen.';
     sample.json(pr,{modelTier:'quick',cache:false}).then(function(r){
       dr.busy=false;var pt=Math.max(1,Math.min(5,Math.round(Number(r&&r.punkte)||3)));
@@ -609,7 +611,7 @@ function render(){
   document.body.dataset.tab=tab;
   var fab=document.querySelector('.fab');if(fab)fab.hidden=!(tab==='aufgaben'||tab==='kunden'||tab==='kunde');
   var v=$('view');v.className='view v-'+tab;
-  v.innerHTML=tab==='start'?viewStart():tab==='aufgaben'?viewAufgaben():tab==='beratung'?viewBeratung():tab==='pipeline'?viewPipeline():tab==='revier'?viewRevier():tab==='wissen'?viewWissen():tab==='kunde'?viewKunde():(tab==='copilot'||tab==='wissenki'||tab==='training')?viewChat(tab==='copilot'?'cp':tab==='wissenki'?'wk':'tr'):viewKunden();
+  v.innerHTML=tab==='start'?viewStart():tab==='aufgaben'?viewAufgaben():tab==='beratung'?viewBeratung():tab==='pipeline'?viewPipeline():tab==='revier'?viewRevier():tab==='wissen'?viewWissen():tab==='akademie'?viewAkademie():tab==='vorbereitung'?viewPrep():tab==='kunde'?viewKunde():(tab==='copilot'||tab==='wissenki'||tab==='training')?viewChat(tab==='copilot'?'cp':tab==='wissenki'?'wk':'tr'):viewKunden();
   if(tab==='beratung')afterBeratungRender();
   drawCharts(v);
   $('kunden-list').innerHTML=allKunden().map(function(n){return '<option value="'+esc(n)+'">'}).join('');
@@ -978,6 +980,29 @@ document.addEventListener('click',function(ev){
     case 'tr-fb-retry':trFeedback();break;
     case 'tr-fb-copy':copyText(trFbText(),'Feedback kopiert');break;
     case 'tr-voice':CH.tr.voice=!CH.tr.voice;if(!CH.tr.voice&&window.speechSynthesis)try{window.speechSynthesis.cancel()}catch(e){}render();break;
+    case 'gv-go':prep.step=Number(btn.dataset.i);if(prep.step===3&&!prep.A)gvBuild();render();window.scrollTo(0,0);break;
+    case 'gv-anl':prep.anlass=(prep.anlass===btn.dataset.v?'':btn.dataset.v);if(prep.A)prep.A.anlassTyp=prep.anlass;render();break;
+    case 'gv-prod':prep.sel[btn.dataset.k]=!prep.sel[btn.dataset.k];gvSync();render();break;
+    case 'gv-gen':{var tx=document.getElementById('gvtxt');if(tx)prep.txt=tx.value;gvBuild();prep.step=3;render();window.scrollTo(0,0);break}
+    case 'gv-regen':{var tx2=document.getElementById('gvtxt');if(tx2)prep.txt=tx2.value;gvBuild();render();break}
+    case 'gv-ex':prep.txt=GV_EX;render();break;
+    case 'gv-lf':prep.lf=!prep.lf;render();break;
+    case 'gv-wk':tab='akademie';wkOpenProd(btn.dataset.k);render();window.scrollTo(0,0);break;
+    case 'gv-addt':{var tl=prep.A.tarife[btn.dataset.k];tl.push({n:String.fromCharCode(65+tl.length),beitrag:NaN,txt:[],f:{}});render();break}
+    case 'gv-delt':prep.A.tarife[btn.dataset.k].splice(Number(btn.dataset.i),1);render();break;
+    case 'gv-chk':prep.A.calc[btn.dataset.p]=btn.checked;break;
+    case 'gv-pdf':gvPdf(btn.dataset.v);break;
+    case 'gv-reset':prep=newPrep();render();break;
+    case 'wk-mode':if(btn.dataset.id==='db'){tab='wissenki';render();break}wk.mode=btn.dataset.id;render();break;
+    case 'wk-home':wk.cat='';wk.unit='';render();window.scrollTo(0,0);break;
+    case 'wk-cat':wk.mode='akad';wk.cat=btn.dataset.id;wk.unit='';render();window.scrollTo(0,0);break;
+    case 'wk-unit':wk.mode='akad';wk.unit=btn.dataset.id;wk.cat=KN_IDX[wk.unit]?KN_IDX[wk.unit].c:wk.cat;tab='akademie';render();window.scrollTo(0,0);break;
+    case 'wk-fav':wkFavToggle(btn.dataset.id);render();break;
+    case 'wk-more':wk.more[btn.dataset.id]=!wk.more[btn.dataset.id];render();break;
+    case 'wk-ask':wkAsk();break;
+    case 'wk-askunit':{var _u=KN_IDX[btn.dataset.id];wk.q='Erkläre mir ausführlicher und mit Beispielen: '+(_u?_u.t:'');wk.unit='';wk.cat='';wk.mode='akad';render();wkAsk();window.scrollTo(0,0);break}
+    case 'wk-ex':exRun(btn.dataset.id);break;
+    case 'wk-go':tab=btn.dataset.id;render();window.scrollTo(0,0);break;
     case 'wk-edit':lx={q:'',sparte:'',typ:'',status:'',fav:false,edit:null};tab='wissen';render();break;
     case 'wk-add':wkAdd();break;
     case 'wk-del':db.settings.wissen=wissenList().filter(function(w){return w.id!==id});save();wkEdit();render();break;
@@ -1051,6 +1076,8 @@ document.addEventListener('click',function(ev){
 });
 document.addEventListener('keydown',function(ev){if((ev.ctrlKey||ev.metaKey)&&ev.key&&ev.key.toLowerCase()==='k'){ev.preventDefault();if(!kmode())openSearch();return}var t=ev.target;if(t&&t.dataset&&t.dataset.chat&&ev.key==='Enter'&&!ev.shiftKey&&!ev.isComposing){ev.preventDefault();chSend(t.dataset.chat)}});
 document.addEventListener('input',function(ev){
+  if(ev.target.dataset&&ev.target.dataset.wk){var _d=ev.target.dataset;if(_d.wk==='q')wk.q=ev.target.value;else if(_d.wk==='s'){wk.s=ev.target.value;wkSearchPaint()}else if(_d.wk==='ex')wk.exTxt[_d.id]=ev.target.value;return}
+  if(ev.target.dataset&&ev.target.dataset.prep!==undefined){prepInput(ev.target);return}
   if(ev.target.dataset&&(ev.target.dataset.home!==undefined||ev.target.dataset.adv!==undefined||ev.target.dataset.kat!==undefined||ev.target.dataset.katsel||ev.target.dataset.sig!==undefined)&&ev.target.type!=='checkbox'&&ev.target.tagName!=='SELECT'){advInput(ev.target);return}
   if(ev.target.id==='sr-q'){var sl=$('sr-list');if(sl)sl.innerHTML=searchHtml(ev.target.value);return}
   if(ev.target.id==='kq'){kundeQuery=ev.target.value;$('klist').innerHTML=kundenListHtml()}
@@ -1403,7 +1430,7 @@ function ampSel(path,val){
 function stat(label,val,sub,cls){var si=/bad/.test(cls||'')?'alert':/good/.test(cls||'')?'trend':/grow/.test(cls||'')?'rocket':'';return '<div class="stat '+(cls||'')+'"><div class="sl">'+(si?'<span class="si">'+ico(si,14)+'</span>':'')+label+'</div><div class="sv">'+val+'</div>'+(sub?'<div class="ss">'+sub+'</div>':'')+'</div>'}
 
 function stepForm(id){
-  if(id==='start')return fStart();if(id==='al_ist')return fAlIst();if(id==='al_loes')return fAlLoes();if(id==='sach')return fSach();if(id==='an')return fAn();if(id==='kv')return fKv();if(id==='brief')return fBrief();if(id==='pf')return pfWizardForm();if(id==='bu')return buForm();if(id==='vp')return fVp();return fOut();
+  if(id==='start')return fStart();if(id==='al_ist')return fAlIst();if(id==='al_loes')return fAlLoes();if(id==='sach')return fSach();if(id==='an')return fAn();if(id==='kv')return fKv();if(id==='brief')return fBrief();if(id==='pf')return pfWizardForm();if(id==='bu')return buForm();if(id==='zus')return zusForm();if(id==='vp')return fVp();return fOut();
 }
 function fAlIst(){
   return '<h3 class="sh">Altersvorsorge: aktueller Stand</h3><div class="grid2">'+
@@ -1454,6 +1481,7 @@ function ganzSachBox(){return '<div class="ganzcard"><h4 class="gh">Ganzheitlich
 
 /* Ergebnisbereich je Schritt */
 function stepRes(id){
+  if(id==='zus')return zusLive();
   if(id==='al_ist'){
     var c=calcAl();if(c.err)return '<div class="note">'+esc(c.err)+'</div>';
     var h='<div class="stats">'+stat('Versorgungsziel',eur(c.ziel),'heutige Kaufkraft')+stat('Erwartung im Ruhestand',eur(c.rente+c.bav),'gesetzliche Rente und Betriebsrente')+
@@ -1497,7 +1525,12 @@ function renderPdf(blocks){
   function need(h){if(y+h>H-16){d.addPage();y=M+8}}
   function ink(){d.setTextColor(22,32,42)}
   blocks.forEach(function(b){
-    if(b.t==='head'){
+    if(b.t==='head'&&b.compact){
+      d.setFillColor(11,27,51);d.rect(0,0,W,46,'F');d.setFillColor(34,227,255);d.rect(M,36,24,1.2,'F');
+      d.setFont('helvetica','bold');d.setFontSize(8.5);d.setTextColor(34,227,255);d.text(pdfTxt(b.kick||'UEBERSICHT'),M,15);
+      d.setFontSize(22);d.setTextColor(255,255,255);d.text(d.splitTextToSize(pdfTxt(b.title),CW),M,26);
+      d.setFont('helvetica','normal');d.setFontSize(10.5);d.setTextColor(201,214,234);d.text(pdfTxt(b.sub),M,32);y=56;ink()}
+    else if(b.t==='head'){
       d.setFillColor(11,27,51);d.rect(0,0,W,120,'F');d.setFillColor(34,227,255);d.rect(M,64,24,1.4,'F');
       d.setFont('helvetica','bold');d.setFontSize(9);d.setTextColor(34,227,255);d.text('BERATUNGSUNTERLAGE',M,30);
       d.setFontSize(30);d.setTextColor(255,255,255);var HT=d.splitTextToSize(pdfTxt(b.title),CW);d.text(HT,M,46);
@@ -1508,7 +1541,7 @@ function renderPdf(blocks){
       toc.forEach(function(t,i){d.setFillColor(10,74,156);d.circle(M+2,ty-1.2,1.1,'F');d.text(d.splitTextToSize(pdfTxt(t),CW-10)[0],M+7,ty);ty+=8});
       d.setFontSize(8.5);d.setTextColor(91,103,115);d.text('Die Zahlen sind Modellrechnungen auf Ihren Angaben. Sie sind keine Garantie und keine Steuer- oder Rechtsberatung.',M,H-24);
       d.addPage();y=M+8;ink()}
-    else if(b.t==='h'){need(18);y+=4;d.setFillColor(10,74,156);d.rect(M,y,1.6,7.5,'F');d.setFont('helvetica','bold');d.setFontSize(14);d.setTextColor(11,27,51);d.text(pdfTxt(b.text),M+5,y+5.6);y+=10;d.setDrawColor(213,219,225);d.line(M,y,W-M,y);y+=4;ink()}
+    else if(b.t==='h'){need(36);y+=4;d.setFillColor(10,74,156);d.rect(M,y,1.6,7.5,'F');d.setFont('helvetica','bold');d.setFontSize(14);d.setTextColor(11,27,51);d.text(pdfTxt(b.text),M+5,y+5.6);y+=10;d.setDrawColor(213,219,225);d.line(M,y,W-M,y);y+=4;ink()}
     else if(b.t==='p'){d.setFont('helvetica','normal');d.setFontSize(10);ink();var L=d.splitTextToSize(pdfTxt(b.text),CW);need(L.length*5+2);d.text(L,M,y+4);y+=L.length*5+3}
     else if(b.t==='small'){d.setFont('helvetica','normal');d.setFontSize(8);d.setTextColor(91,103,115);var L2=d.splitTextToSize(pdfTxt(b.text),CW);need(L2.length*3.8+3);d.text(L2,M,y+3);y+=L2.length*3.8+4;ink()}
     else if(b.t==='kv'){b.rows.forEach(function(r,i){need(9);var st=(i===b.strong);if(st){d.setFillColor(228,237,249);d.rect(M,y,CW,8.4,'F');d.setFillColor(10,74,156);d.rect(M,y,1.4,8.4,'F')}d.setFontSize(st?11.5:10);d.setFont('helvetica',st?'bold':'normal');if(st)d.setTextColor(6,48,107);else ink();d.text(pdfTxt(r[0]),M+(st?4:0),y+(st?5.7:4.5));d.text(pdfTxt(r[1]),W-M-(st?3:0),y+(st?5.7:4.5),{align:'right'});y+=st?9.6:6.5;ink();d.setDrawColor(235,238,242);if(!st)d.line(M,y-0.8,W-M,y-0.8)});y+=2}
@@ -1520,6 +1553,77 @@ function renderPdf(blocks){
         var cells=r.map(function(t,i){return d.splitTextToSize(pdfTxt(t),b.w[i]*CW-4)}),n=Math.max.apply(null,cells.map(function(c){return c.length})),h=n*4.6+3;
         need(h);cells.forEach(function(c,i){d.text(c,xs[i]+2,y+4.6)});y+=h;d.setDrawColor(235,238,242);d.line(M,y,W-M,y)});
       y+=4}
+    else if(b.t==='vs2'){
+      var gap=6,cwd=(CW-gap)/2,cards=[b.left].concat(b.right?[b.right]:[]);
+      function vsLay(c){return c.rows.map(function(r){d.setFont('helvetica','bold');var tv=pdfTxt(r[1]),vw=(typeof d.getTextWidth==='function'?d.getTextWidth(tv):tv.length*1.8)+3;d.setFont('helvetica','normal');var L1=d.splitTextToSize(pdfTxt(r[0]),Math.max(cwd-8-vw,18));return {r:r,L:L1,h:Math.max(L1.length*4.4,5)+3}})}
+      d.setFont('helvetica','normal');d.setFontSize(9);
+      var lays=cards.map(vsLay),bh=0;
+      lays.forEach(function(ls){var h=19;ls.forEach(function(x){h+=x.h});h+=13;bh=Math.max(bh,h)});
+      need(bh+16);var y0=y;
+      cards.forEach(function(c,ci){
+        var x0=M+ci*(cwd+gap),ls=lays[ci];
+        d.setDrawColor(213,219,225);d.setFillColor(255,255,255);d.rect(x0,y0,cwd,bh,'FD');
+        d.setFillColor(c.col[0],c.col[1],c.col[2]);d.rect(x0,y0,cwd,15,'F');
+        d.setFont('helvetica','bold');d.setFontSize(8);d.setTextColor(255,255,255);d.text(pdfTxt(c.tag),x0+4,y0+5);
+        d.setFontSize(10.5);d.text(d.splitTextToSize(pdfTxt(c.title),cwd-8)[0],x0+4,y0+10);
+        d.setFont('helvetica','normal');d.setFontSize(7.5);d.text(d.splitTextToSize(pdfTxt(c.sub),cwd-8)[0],x0+4,y0+13.6);
+        var yy=y0+19;d.setFontSize(9);ink();
+        ls.forEach(function(x){d.setFont('helvetica','normal');d.setFontSize(9);ink();d.text(x.L,x0+4,yy+3.4);d.setFont('helvetica','bold');d.text(pdfTxt(x.r[1]),x0+cwd-4,yy+3.4,{align:'right'});yy+=x.h;d.setDrawColor(235,238,242);d.line(x0+4,yy-1,x0+cwd-4,yy-1)});
+        d.setFillColor(c.tint[0],c.tint[1],c.tint[2]);d.rect(x0,y0+bh-13,cwd,13,'F');d.setFillColor(c.col[0],c.col[1],c.col[2]);d.rect(x0,y0+bh-13,1.4,13,'F');
+        d.setFont('helvetica','bold');d.setFontSize(8);d.setTextColor(c.col[0],c.col[1],c.col[2]);d.text(pdfTxt(c.total[0]),x0+5,y0+bh-7.6);
+        d.setFontSize(13);d.text(pdfTxt(c.total[1]),x0+5,y0+bh-2.4);ink()});
+      y=y0+bh+3;
+      if(!b.right){d.setFont('helvetica','normal');d.setFontSize(8.5);d.setTextColor(91,103,115);d.text('Für die PKV sind noch keine Beiträge eingetragen.',M,y+3);y+=6;ink()}
+      if(b.diff){need(11);d.setFillColor(11,27,51);d.rect(M,y,CW,9,'F');d.setFont('helvetica','bold');d.setFontSize(10.5);d.setTextColor(255,255,255);d.text(pdfTxt(b.diff),M+4,y+6);y+=12;ink()}
+      else y+=3}
+    else if(b.t==='card'){
+      var cc=parseInt(String(b.col||'#25507A').slice(1),16),cr=cc>>16,cg=(cc>>8)&255,cb=cc&255;
+      d.setFont('helvetica','normal');d.setFontSize(9);
+      var rl=b.rows.map(function(r){return d.splitTextToSize(pdfTxt(r[1]),CW-40)}),ch=12;rl.forEach(function(l){ch+=Math.max(l.length*4.2,4.6)+1.6});
+      need(ch+4);d.setFillColor(246,248,251);d.setDrawColor(213,219,225);d.rect(M,y,CW,ch,'FD');d.setFillColor(cr,cg,cb);d.rect(M,y,2,ch,'F');
+      d.setFont('helvetica','bold');d.setFontSize(11);d.setTextColor(11,27,51);d.text(pdfTxt(b.title),M+6,y+6.4);
+      d.setFont('helvetica','normal');d.setFontSize(8);d.setTextColor(cr,cg,cb);d.text(pdfTxt(b.tag||''),W-M-4,y+6.4,{align:'right'});
+      var cy=y+10;b.rows.forEach(function(r,i){d.setFont('helvetica','bold');d.setFontSize(8.5);d.setTextColor(91,103,115);d.text(pdfTxt(r[0]),M+6,cy+3.4);d.setFont('helvetica','normal');d.setFontSize(9);ink();d.text(rl[i],M+36,cy+3.4);cy+=Math.max(rl[i].length*4.2,4.6)+1.6});
+      y+=ch+4}
+    else if(b.t==='pb'){d.addPage();y=M+8}
+    else if(b.t==='sh'){need(10);y+=2;d.setFont('helvetica','bold');d.setFontSize(10.5);d.setTextColor(10,74,156);d.text(pdfTxt(b.text),M,y+4);y+=7;ink()}
+    else if(b.t==='facts'){
+      b.rows.forEach(function(r){d.setFont('helvetica','normal');d.setFontSize(9.5);var L1=d.splitTextToSize(pdfTxt(r[1]),CW-34),h1=Math.max(L1.length*4.5,5)+2;need(h1);d.setFont('helvetica','bold');d.setTextColor(91,103,115);d.setFontSize(8.5);d.text(pdfTxt(r[0]).toUpperCase(),M,y+3.6);d.setFont('helvetica','normal');d.setFontSize(9.5);ink();d.text(L1,M+34,y+3.8);y+=h1;d.setDrawColor(235,238,242);d.line(M,y-0.6,W-M,y-0.6)});
+      y+=3}
+    else if(b.t==='topic'){
+      var pcol=b.prio==='hoch'?[154,95,14]:b.prio==='mittel'?[10,74,156]:[110,120,132];
+      var scol=b.stt==='ok'?[44,122,87]:b.stt==='warn'?[154,95,14]:[110,120,132];
+      d.setFont('helvetica','normal');d.setFontSize(9);var kL=b.kenn?d.splitTextToSize(pdfTxt(b.kenn),CW-14):[],aL=d.splitTextToSize(pdfTxt(b.ansatz),CW-14),wL=b.why?d.splitTextToSize(pdfTxt(b.why),CW-14):[];
+      var hh=22+(kL.length+aL.length+wL.length)*4.1+4;need(hh+4);
+      d.setFillColor(246,248,251);d.setDrawColor(213,219,225);d.rect(M,y,CW,hh,'FD');d.setFillColor(pcol[0],pcol[1],pcol[2]);d.rect(M,y,2,hh,'F');
+      d.setFont('helvetica','bold');d.setFontSize(11);d.setTextColor(11,27,51);d.text(d.splitTextToSize(pdfTxt(b.n+'   '+b.title),CW-14)[0],M+6,y+7);
+      d.setFontSize(8);d.setTextColor(scol[0],scol[1],scol[2]);d.text(pdfTxt('Status: '+b.stl),M+6,y+12.5);d.setTextColor(pcol[0],pcol[1],pcol[2]);d.text(pdfTxt(b.prioL),W-M-4,y+12.5,{align:'right'});
+      var yy=y+16;d.setFont('helvetica','normal');d.setFontSize(9);d.setTextColor(91,103,115);if(wL.length){d.text(wL,M+6,yy+3);yy+=wL.length*4.1+1.5}
+      ink();if(kL.length){d.text(kL,M+6,yy+3);yy+=kL.length*4.1+1.5}d.setFont('helvetica','bold');d.setTextColor(10,74,156);d.text('Gesprächsansatz',M+6,yy+3);d.setFont('helvetica','normal');ink();yy+=0.2;
+      d.text(aL,M+6,yy+7);y+=hh+4}
+    else if(b.t==='notes'){
+      need(38);y+=2;d.setFont('helvetica','bold');d.setFontSize(10.5);d.setTextColor(10,74,156);d.text(pdfTxt(b.title),M,y+4);y+=6;
+      var nl=Math.max(3,Math.min(7,Math.floor((H-24-y)/7.5)));d.setDrawColor(200,207,215);for(var li=0;li<nl;li++){y+=7.5;d.line(M,y,W-M,y)}y+=4;ink()}
+    else if(b.t==='chk'){
+      need(16);d.setFillColor(11,27,51);d.rect(M,y,CW,7,'F');d.setFont('helvetica','bold');d.setFontSize(10);d.setTextColor(255,255,255);d.text(pdfTxt(b.title),M+3,y+4.9);y+=7;
+      b.rows.forEach(function(r){var ind=r.sub?7:0;need(7.5);d.setFont('helvetica',r.sub?'normal':'bold');d.setFontSize(r.sub?9:10);ink();
+        if(r.ok){d.setFillColor(44,122,87);d.circle(M+4+ind,y+3.8,1.8,'F')}else{d.setDrawColor(183,121,31);d.setLineWidth(0.5);d.circle(M+4+ind,y+3.8,1.8,'S');d.setLineWidth(0.2)}
+        d.text(pdfTxt(r.name),M+9+ind,y+4.6);d.setFont('helvetica','normal');d.setFontSize(9);if(r.ok)d.setTextColor(44,122,87);else d.setTextColor(154,95,14);d.text(pdfTxt(r.text),W-M-3,y+4.6,{align:'right'});ink();
+        y+=7;d.setDrawColor(235,238,242);d.line(M,y,W-M,y)});
+      y+=5}
+    else if(b.t==='rec'){
+      d.setFont('helvetica','normal');d.setFontSize(9.5);var bl=d.splitTextToSize(pdfTxt(b.body),CW-20),fl=[];(b.facts||[]).forEach(function(f){fl.push(d.splitTextToSize(pdfTxt(f),CW-26))});
+      d.setFont('helvetica','bold');d.setFontSize(9.5);var sl=d.splitTextToSize(pdfTxt('Naechster Schritt: '+b.step).replace('Naechster','Nächster'),CW-20);
+      var fh=0;fl.forEach(function(f){fh+=f.length*4.3+1.2});
+      var hh=12+bl.length*4.7+fh+sl.length*4.7+6;need(hh+4);
+      d.setFillColor(244,247,251);d.setDrawColor(213,219,225);d.rect(M,y,CW,hh,'FD');d.setFillColor(10,74,156);d.rect(M,y,1.8,hh,'F');
+      d.circle(M+9,y+7,4,'F');d.setFont('helvetica','bold');d.setFontSize(10);d.setTextColor(255,255,255);d.text(String(b.n),M+9,y+8.3,{align:'center'});
+      d.setFontSize(12);d.setTextColor(11,27,51);d.text(pdfTxt(b.title),M+16,y+8);
+      d.setFont('helvetica','normal');d.setFontSize(9);d.setTextColor(10,74,156);d.text(pdfTxt(b.tag||''),W-M-3,y+7.5,{align:'right'});
+      var yy=y+13;d.setFont('helvetica','normal');d.setFontSize(9.5);ink();d.text(bl,M+16,yy+3);yy+=bl.length*4.7+1.5;
+      fl.forEach(function(f){d.setFontSize(9);d.setFillColor(10,74,156);d.circle(M+18,yy+2.3,0.7,'F');d.text(f,M+21,yy+3);yy+=f.length*4.3+1.2});
+      d.setFont('helvetica','bold');d.setFontSize(9.5);d.setTextColor(10,74,156);d.text(sl,M+16,yy+4);ink();
+      y+=hh+5}
     else if(b.t==='img'){var w=b.w||CW,h=w*b.ratio;need(h+3);d.addImage(b.src,'PNG',M+(CW-w)/2,y,w,h,undefined,'FAST');y+=h+4}
     else if(b.t==='bul'){d.setFont('helvetica','normal');d.setFontSize(10);ink();b.items.forEach(function(it){var L3=d.splitTextToSize(pdfTxt(it),CW-6);need(L3.length*5+2);d.text('-',M+1,y+4);d.text(L3,M+6,y+4);y+=L3.length*5+1.5});y+=2}
     else if(b.t==='feat'){
@@ -1544,14 +1648,16 @@ function renderPdf(blocks){
     }
   });
   var n=d.getNumberOfPages();
-  for(var i=1;i<=n;i++){d.setPage(i);d.setFont('helvetica','normal');d.setFontSize(8);if(i>1){d.setTextColor(11,27,51);d.setFont('helvetica','bold');d.text('BERATUNGSUNTERLAGE',M,12);d.setFont('helvetica','normal');d.setTextColor(91,103,115);d.text(fmtFull(todayIso()),W-M,12,{align:'right'});d.setDrawColor(34,227,255);d.setLineWidth(0.5);d.line(M,14.5,W-M,14.5);d.setLineWidth(0.2);d.setDrawColor(213,219,225);d.line(M,H-12,W-M,H-12)}d.setTextColor(120,128,138);d.text('Seite '+i+' von '+n,W-M,H-8,{align:'right'});d.text('Modellrechnung, keine Garantie, keine Steuer- oder Rechtsberatung',M,H-8)}
+  var HB=(blocks[0]&&blocks[0].t==='head')?blocks[0]:{},hdrT=HB.hdr||'BERATUNGSUNTERLAGE',ftT=HB.foot||'Modellrechnung, keine Garantie, keine Steuer- oder Rechtsberatung';renderPdf.pages=n;
+  for(var i=1;i<=n;i++){d.setPage(i);d.setFont('helvetica','normal');d.setFontSize(8);if(i>1){d.setTextColor(11,27,51);d.setFont('helvetica','bold');d.text(pdfTxt(hdrT),M,12);d.setFont('helvetica','normal');d.setTextColor(91,103,115);d.text(fmtFull(todayIso()),W-M,12,{align:'right'});d.setDrawColor(34,227,255);d.setLineWidth(0.5);d.line(M,14.5,W-M,14.5);d.setLineWidth(0.2);d.setDrawColor(213,219,225);d.line(M,H-12,W-M,H-12)}d.setTextColor(120,128,138);d.text('Seite '+i+' von '+n,W-M,H-8,{align:'right'});d.text(pdfTxt(ftT),M,H-8)}
   return d.output('arraybuffer');
 }
 function renderHtmlReport(blocks){
   function e(s){return esc(String(s==null?'':s))}
-  var h='<!doctype html><html lang="de"><head><meta charset="utf-8"><title>Beratungsunterlage</title><style>@page{size:A4;margin:16mm 16mm 18mm}*{box-sizing:border-box}body{font:14px/1.55 Arial,Helvetica,sans-serif;max-width:780px;margin:0 auto;padding:0 16px 32px;color:#16202A}.cover{background:#0B1B33;color:#fff;margin:0 -16px 28px;padding:56px 40px 48px;min-height:380px;page-break-after:always;break-after:page}.cover .k{color:#22E3FF;font-size:12px;letter-spacing:.18em;font-weight:700}.cover h1{color:#fff;font-size:38px;line-height:1.1;margin:14px 0 14px}.cover .bar{width:60px;height:4px;background:#22E3FF;margin:18px 0}.cover p{color:#C9D6EA;font-size:16px;margin:0}.toc{padding:28px 0 0}.toc h3{margin:0 0 6px;font-size:16px;color:#0B1B33}.toc ul{list-style:none;padding:0;margin:14px 0}.toc li{padding:5px 0 5px 20px;position:relative}.toc li:before{content:"";position:absolute;left:0;top:13px;width:8px;height:8px;border-radius:50%;background:#0A4A9C}h2{font-size:19px;color:#0B1B33;border-left:5px solid #0A4A9C;padding:2px 0 2px 12px;margin:30px 0 10px;border-bottom:0;break-after:avoid}h3{color:#0A4A9C;break-after:avoid}table{border-collapse:collapse;width:100%;margin:8px 0;break-inside:auto}tr{break-inside:avoid}td,th{border-bottom:1px solid #E3E8ED;padding:7px 8px;text-align:left;vertical-align:top}th{background:#0B1B33;color:#fff;font-size:13px}tr.key td{background:#E4EDF9;border-left:4px solid #0A4A9C;font-weight:700;font-size:16px;color:#06306B}img{width:100%;margin:8px 0;break-inside:avoid}img.nar{width:60%;display:block;margin:8px auto}.s{font-size:12px;color:#5B6773}.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}.foot{margin-top:30px;border-top:2px solid #22E3FF;padding-top:8px;font-size:11px;color:#5B6773}</style></head><body>';
+  var h='<!doctype html><html lang="de"><head><meta charset="utf-8"><title>Beratungsunterlage</title><style>@page{size:A4;margin:16mm 16mm 18mm}*{box-sizing:border-box}body{font:14px/1.55 Arial,Helvetica,sans-serif;max-width:780px;margin:0 auto;padding:0 16px 32px;color:#16202A}.cover{background:#0B1B33;color:#fff;margin:0 -16px 28px;padding:56px 40px 48px;min-height:380px;page-break-after:always;break-after:page}.cover .k{color:#22E3FF;font-size:12px;letter-spacing:.18em;font-weight:700}.cover h1{color:#fff;font-size:38px;line-height:1.1;margin:14px 0 14px}.cover .bar{width:60px;height:4px;background:#22E3FF;margin:18px 0}.cover p{color:#C9D6EA;font-size:16px;margin:0}.toc{padding:28px 0 0}.toc h3{margin:0 0 6px;font-size:16px;color:#0B1B33}.toc ul{list-style:none;padding:0;margin:14px 0}.toc li{padding:5px 0 5px 20px;position:relative}.toc li:before{content:"";position:absolute;left:0;top:13px;width:8px;height:8px;border-radius:50%;background:#0A4A9C}h2{font-size:19px;color:#0B1B33;border-left:5px solid #0A4A9C;padding:2px 0 2px 12px;margin:30px 0 10px;border-bottom:0;break-after:avoid}h3{color:#0A4A9C;break-after:avoid}table{border-collapse:collapse;width:100%;margin:8px 0;break-inside:auto}tr{break-inside:avoid}td,th{border-bottom:1px solid #E3E8ED;padding:7px 8px;text-align:left;vertical-align:top}th{background:#0B1B33;color:#fff;font-size:13px}tr.key td{background:#E4EDF9;border-left:4px solid #0A4A9C;font-weight:700;font-size:16px;color:#06306B}img{width:100%;margin:8px 0;break-inside:avoid}img.nar{width:60%;display:block;margin:8px auto}.s{font-size:12px;color:#5B6773}.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}.vs{display:flex;gap:14px;margin:12px 0;break-inside:avoid}.vc{flex:1;border:1px solid #D5DBE1;border-radius:10px;overflow:hidden;display:flex;flex-direction:column}.vc table{margin:0;flex:1}.vh{padding:10px 14px;color:#fff;display:flex;flex-direction:column;gap:1px}.vh small{letter-spacing:.14em;font-weight:700;font-size:11px;opacity:.9}.vh b{font-size:16px}.vh span{font-size:12px;opacity:.9}.vt{padding:10px 14px;display:flex;flex-direction:column}.vt small{font-weight:700;font-size:12px}.vt strong{font-size:22px}.vd{background:#0B1B33;color:#fff;font-weight:700;padding:10px 14px;border-radius:8px;margin-bottom:12px}.cover.mini{min-height:0;padding:30px 36px;page-break-after:auto;break-after:auto}.cover.mini h1{font-size:30px;margin:8px 0}.cover h1{overflow-wrap:anywhere}@media(max-width:560px){.cover h1{font-size:26px}.cover.mini{padding:22px 18px}.cover{padding:36px 22px}}.chk{margin:12px 0;break-inside:avoid}.chk th{text-align:left}.chk tr.sub td{padding-left:28px;font-size:13px}.rec{background:#F4F7FB;border:1px solid #D5DBE1;border-left:5px solid #0A4A9C;border-radius:8px;padding:12px 16px;margin:12px 0;break-inside:avoid}.rec .rh{display:flex;align-items:center;gap:10px}.rec .rh b{background:#0A4A9C;color:#fff;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:14px}.rec .rh strong{font-size:17px;color:#0B1B33;flex:1}.rec .rh span{color:#0A4A9C;font-size:12px}.rec p{margin:8px 0}.rec .st{color:#0A4A9C;font-weight:700}.shh{margin:14px 0 4px;font-size:15px}.fcts th{width:150px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#5B6773;background:none;border-bottom:1px solid #E3E8ED}.tpc{background:#F6F8FB;border:1px solid #D5DBE1;border-left:5px solid #6E7884;border-radius:8px;padding:10px 14px;margin:10px 0;break-inside:avoid}.tpc.p-hoch{border-left-color:#9A5F0E}.tpc.p-mittel{border-left-color:#0A4A9C}.tpc .th{font-size:15px;color:#0B1B33}.tpc .tm{display:flex;justify-content:space-between;font-size:12px;margin:4px 0}.tpc .s-ok{color:#2C7A57}.tpc .s-warn{color:#9A5F0E}.tpc .s-miss,.tpc .s-off{color:#6E7884}.tpc .pp{font-weight:700}.tpc .why{color:#5B6773;margin:2px 0}.tpc p{margin:4px 0;font-size:13px}.nl{height:150px;background:repeating-linear-gradient(transparent,transparent 29px,#C8CFD7 29px,#C8CFD7 30px)}.foot{margin-top:30px;border-top:2px solid #22E3FF;padding-top:8px;font-size:11px;color:#5B6773}</style></head><body>';
   blocks.forEach(function(b){
-    if(b.t==='head'){var tc=[];blocks.forEach(function(x){if(x.t==='h'&&tc.indexOf(x.text)<0&&tc.length<14)tc.push(x.text)});h+='<div class="cover"><div class="k">BERATUNGSUNTERLAGE</div><h1>'+e(b.title)+'</h1><div class="bar"></div><p>'+e(b.sub)+'</p></div><div class="toc"><h3>Das finden Sie in dieser Unterlage</h3><ul>'+tc.map(function(t){return '<li>'+e(t)+'</li>'}).join('')+'</ul></div>'}
+    if(b.t==='head'&&b.compact){h+='<div class="cover mini"><div class="k">'+e(b.kick||'ÜBERSICHT')+'</div><h1>'+e(b.title)+'</h1><p>'+e(b.sub)+'</p></div>'}
+    else if(b.t==='head'){var tc=[];blocks.forEach(function(x){if(x.t==='h'&&tc.indexOf(x.text)<0&&tc.length<14)tc.push(x.text)});h+='<div class="cover"><div class="k">BERATUNGSUNTERLAGE</div><h1>'+e(b.title)+'</h1><div class="bar"></div><p>'+e(b.sub)+'</p></div><div class="toc"><h3>Das finden Sie in dieser Unterlage</h3><ul>'+tc.map(function(t){return '<li>'+e(t)+'</li>'}).join('')+'</ul></div>'}
     else if(b.t==='h')h+='<h2>'+e(b.text)+'</h2>';
     else if(b.t==='p')h+='<p>'+e(b.text)+'</p>';
     else if(b.t==='small')h+='<p class="s">'+e(b.text)+'</p>';
@@ -1560,6 +1666,15 @@ function renderHtmlReport(blocks){
     else if(b.t==='bul')h+='<ul>'+b.items.map(function(t){return '<li>'+e(t)+'</li>'}).join('')+'</ul>';
     else if(b.t==='feat')h+='<h3>'+e(b.title)+'</h3><table><tr><th>Merkmal</th><th>Ihre Police</th></tr>'+b.rows.map(function(r){var c=AMPC[r.s||''];return '<tr><td>'+e(r.name)+'</td><td><span class="dot" style="background:rgb('+c.join(',')+')"></span>'+e(r.t||AMP[r.s||''])+'</td></tr>'}).join('')+'</table>';
     else if(b.t==='disc')h+='<p class="s" style="border:1px solid #D5DBE1;padding:10px;background:#F0F3F6;font-style:italic">'+e(b.text)+'</p>';
+    else if(b.t==='vs2'){h+='<div class="vs">'+[b.left,b.right].filter(Boolean).map(function(c){return '<div class="vc"><div class="vh" style="background:rgb('+c.col.join(',')+')"><small>'+e(c.tag)+'</small><b>'+e(c.title)+'</b><span>'+e(c.sub)+'</span></div><table>'+c.rows.map(function(r){return '<tr><td>'+e(r[0])+'</td><td style="text-align:right;white-space:nowrap"><b>'+e(r[1])+'</b></td></tr>'}).join('')+'</table><div class="vt" style="background:rgb('+c.tint.join(',')+');border-left:4px solid rgb('+c.col.join(',')+');color:rgb('+c.col.join(',')+')"><small>'+e(c.total[0])+'</small><strong>'+e(c.total[1])+'</strong></div></div>'}).join('')+'</div>'+(b.right?'':'<p class="s">Für die PKV sind noch keine Beiträge eingetragen.</p>')+(b.diff?'<div class="vd">'+e(b.diff)+'</div>':'')}
+    else if(b.t==='card')h+='<div class="tpc" style="border-left-color:'+e(b.col)+'"><div class="tm"><strong class="th">'+e(b.title)+'</strong><span class="s">'+e(b.tag||'')+'</span></div><table class="fcts">'+b.rows.map(function(r){return '<tr><th>'+e(r[0])+'</th><td>'+e(r[1])+'</td></tr>'}).join('')+'</table></div>';
+    else if(b.t==='pb')h+='<div style="break-after:page;page-break-after:always"></div>';
+    else if(b.t==='sh')h+='<h3 class="shh">'+e(b.text)+'</h3>';
+    else if(b.t==='facts')h+='<table class="fcts">'+b.rows.map(function(r){return '<tr><th>'+e(r[0])+'</th><td>'+e(r[1])+'</td></tr>'}).join('')+'</table>';
+    else if(b.t==='topic')h+='<div class="tpc p-'+e(b.prio)+'"><div class="th"><strong>'+e(b.n)+'  '+e(b.title)+'</strong></div><div class="tm"><span class="s-'+e(b.stt)+'">Status: '+e(b.stl)+'</span><span class="pp">'+e(b.prioL)+'</span></div><p class="why">'+e(b.why)+'</p><p>'+e(b.kenn)+'</p><p><b style="color:#0A4A9C">Gesprächsansatz</b> '+e(b.ansatz)+'</p></div>';
+    else if(b.t==='notes')h+='<h3 class="shh">'+e(b.title)+'</h3><div class="nl"></div>';
+    else if(b.t==='chk')h+='<table class="chk"><tr><th colspan="2">'+e(b.title)+'</th></tr>'+b.rows.map(function(r){return '<tr'+(r.sub?' class="sub"':'')+'><td><span class="dot" style="background:'+(r.ok?'#2C7A57':'#fff;border:2px solid #B7791F;box-sizing:border-box')+'"></span>'+e(r.name)+'</td><td style="text-align:right;color:'+(r.ok?'#2C7A57':'#9A5F0E')+'">'+e(r.text)+'</td></tr>'}).join('')+'</table>';
+    else if(b.t==='rec')h+='<div class="rec"><div class="rh"><b>'+b.n+'</b><strong>'+e(b.title)+'</strong><span>'+e(b.tag||'')+'</span></div><p>'+e(b.body)+'</p>'+((b.facts&&b.facts.length)?'<ul>'+b.facts.map(function(f){return '<li>'+e(f)+'</li>'}).join('')+'</ul>':'')+'<p class="st">Nächster Schritt: '+e(b.step)+'</p></div>';
     else if(b.t==='img')h+='<img'+(b.w?' class="nar"':'')+' src="'+b.src+'" alt="Diagramm">';
     else if(b.t==='cmp'){
       function cell(z){var c=AMPC[z.s||''];return '<td><span class="dot" style="background:rgb('+c.join(',')+')"></span>'+e(z.t||AMP[z.s||''])+'</td>'}
@@ -1698,18 +1813,70 @@ function buildReport(){
     var kc=calcKv();
     if(!kc.err){
       if(S.kv){
-        b.push({t:'h',text:'Krankenversicherung: GKV mit Zusatz oder private Krankenversicherung'});
-        var kr=[['GKV-Beitrag (Arbeitnehmeranteil inkl. Pflege)',eur(kc.gkv)],['Zusatzversicherungen (Kunde '+eur(kc.zk)+', Kinder '+eur(kc.zn)+')',eur(kc.zk+kc.zn)],['GKV bleiben mit Zusatz, gesamt',eur(kc.A)]];
-        if(kc.hasPkv){kr.push(['PKV Gesamtbeitrag aller Personen',eur(kc.tot)]);kr.push(['Arbeitgeberzuschuss',eur(kc.agz)]);kr.push(['PKV Eigenanteil (Zusatzversicherungen entfallen)',eur(kc.eigen)]);if(kc.cbOn)kr.push(['PKV effektiv mit Cashback: Jahr 1 / Jahr 2 / ab Jahr 3',eur(kc.eff[0])+' / '+eur(kc.eff[1])+' / '+eur(kc.eff[2])])}
-        b.push({t:'table',head:['Position','Pro Monat'],w:[0.7,0.3],rows:kr});
+        b.push({t:'h',text:'Krankenversicherung: Zwei Wege im Vergleich'});b.push({t:'p',text:'Beide Wege sind möglich. Hier steht nebeneinander, was jeder Weg monatlich kostet und was darin enthalten ist. Eine Entscheidung ist heute nicht nötig.'});
+        var gl=[['GKV-Beitrag (Arbeitnehmeranteil, inkl. Pflege)',eur(kc.gkv)]];
+        if(kc.zk>0)gl.push(['Zusatzversicherungen Kunde',eur(kc.zk)]);
+        if(kc.zn>0)gl.push(['Zusatzversicherungen Kinder',eur(kc.zn)]);
+        var L={t:'vs',tag:'WEG 1 · GKV',title:'Gesetzlich versichert, mit Zusatz',sub:'Ihr Weg heute: Kassenbeitrag plus Zusatzversicherungen',rows:gl,total:['Gesamt pro Monat',eur(kc.A)],col:[10,74,156],tint:[228,237,249]},R=null;
+        if(kc.hasPkv){
+          var pl=[['Beitrag aller Personen',eur(kc.tot)],['abzüglich Arbeitgeberzuschuss',eur(kc.agz)]];
+          if(kc.cbOn)pl.push(['Mit Cashback: Jahr 1 / 2 / ab 3',eur(kc.eff[0])+' / '+eur(kc.eff[1])+' / '+eur(kc.eff[2])]);
+          R={t:'vs',tag:'WEG 2 · PKV',title:'Privat versichert, ohne Zusatz',sub:(adv.kv.pers[0]&&adv.kv.pers[0].tarif?'Tarif: '+adv.kv.pers[0].tarif+'. ':'')+'Zusatzversicherungen sind im Tarif enthalten',rows:pl,total:['Ihr Eigenanteil pro Monat',eur(kc.eigen)],col:[14,116,144],tint:[221,240,244]};
+        }
+        var dm=R?(kc.eigen-kc.A):NaN;
+        b.push({t:'vs2',left:L,right:R,diff:R&&isFinite(dm)?('Unterschied pro Monat: Weg 2 liegt '+(dm>0?eur(dm)+' über':dm<0?eur(-dm)+' unter':'gleichauf mit')+' Weg 1'):''});
         b.push({t:'img',src:chartKv(kc).toDataURL('image/png'),ratio:560/1100});
         var pr=adv.kv.pers.map(function(p,i){return [persName(i),p.tarif||'-',isFinite(nv(p.b))?eur(nv(p.b)):'-']}).filter(function(r){return r[2]!=='-'});
         if(pr.length)b.push({t:'table',head:['Person','Tarif','Beitrag pro Monat'],w:[0.25,0.45,0.3],rows:pr});
         var kr2=adv.sach.pkv.rows.filter(function(r){return r.ist.s||r.soll.s||r.ist.t||r.soll.t});
-        if(kr2.length)b.push({t:'cmp',title:'Leistungen im Vergleich',rows:kr2,tIst:adv.sach.pkv.tIst,tSoll:adv.sach.pkv.tSoll,bIst:NaN,bSoll:NaN});
+        if(kr2.length)b.push({t:'cmp',title:'Was Sie dafür bekommen: Leistungen im Vergleich',rows:kr2,tIst:adv.sach.pkv.tIst,tSoll:adv.sach.pkv.tSoll,bIst:NaN,bSoll:NaN});
       }
       if(S.kv_entw)b.push({t:'img',src:chartEntw().toDataURL('image/png'),ratio:600/1100});
-      if(S.kv_alter){var ka=calcKvAlter();if(!ka.err){b.push({t:'h',text:'Beitrag im Ruhestand'});b.push({t:'img',src:chartAlter(ka).toDataURL('image/png'),ratio:580/1100})}}
+      if(S.kv_alter){var ka=calcKvAlter();if(!ka.err){
+        var kk2=adv.kv,pc2=nv(kk2.rvPct);if(isNaN(pc2))pc2=KV.rv;var pcs=String(pc2).replace('.',',')+' %',rn=nv(kk2.rente),neg=function(x){return '- '+eur(x)};
+        b.push({t:'h',text:'Beitrag im Ruhestand: Wird es im Alter teurer?'});
+        var bl=[];
+        if(kc.n>0)bl.push('Die Kinder sind dann nicht mehr im Tarif. Ihr Beitrag bezieht sich nur noch auf Sie.');
+        if(ka.en>0)bl.push('Die Beitragsentlastung greift: Der Beitrag wird günstiger, und der Beitragsteil dafür fällt komplett weg.');
+        if(ka.tg>0)bl.push('Das Krankentagegeld entfällt, denn im Ruhestand wird es nicht mehr gebraucht.');
+        if(ka.zu>0)bl.push('Der gesetzliche Zuschlag endet.');
+        bl.push('Die Rentenversicherung zahlt auf Antrag einen Zuschuss von '+pcs+' der Bruttorente, höchstens die Hälfte des Beitrags (Stand 2026).');
+        b.push({t:'bul',items:bl});
+        var gr=[];if(isFinite(rn)&&rn>0)gr.push(['Bruttorente (Annahme)',eur(rn)]);
+        gr.push([ka.gEst?'Kranken- und Pflegebeitrag aus der Rente (geschätzt)':'Kranken- und Pflegebeitrag im Alter',isFinite(ka.gA)?eur(ka.gA):'-']);
+        if(kc.zk>0)gr.push(['Zusatzversicherungen',eur(kc.zk)]);
+        var gtot=isFinite(ka.gA)?ka.gA+(kc.zk>0?kc.zk:0):NaN;
+        var pr2=[[ka.manual?'Beitrag im Alter (Eingabe)':'Beitrag bei Rentenbeginn, nur Sie',eur(ka.ges)]];
+        if(ka.zu>0)pr2.push(['Gesetzlicher Zuschlag entfällt',neg(ka.zu)]);
+        if(ka.tg>0)pr2.push(['Krankentagegeld entfällt',neg(ka.tg)]);
+        if(ka.en>0)pr2.push(['Beitragsentlastung: Beitrag fällt weg',neg(ka.en)]);
+        if(ka.rvz>0)pr2.push(['Zuschuss Rentenversicherung ('+pcs+')',neg(ka.rvz)]);
+        var dA=isFinite(gtot)?ka.end-gtot:NaN;
+        b.push({t:'vs2',left:{tag:'WEG 1 · GKV',title:'Gesetzlich im Ruhestand',sub:'Beitrag aus der gesetzlichen Rente',rows:gr,total:['Pro Monat im Ruhestand',isFinite(gtot)?eur(gtot):'-'],col:[10,74,156],tint:[228,237,249]},
+          right:{tag:'WEG 2 · PKV',title:'Privat im Ruhestand',sub:'So wird aus dem Beitrag Ihr Eigenanteil',rows:pr2,total:['Ihr Beitrag im Ruhestand',eur(ka.end)],col:[14,116,144],tint:[221,240,244]},
+          diff:isFinite(dA)?('Unterschied pro Monat im Ruhestand: Weg 2 liegt '+(dA>0?eur(dA)+' über':dA<0?eur(-dA)+' unter':'gleichauf mit')+' Weg 1'):''});
+        (function(){
+          var D=KV_ENTW,nY=D.years.length-1,yr0=D.years[0],yr1=D.years[nY];
+          function cg(v){return Math.pow(v[nY]/v[0],1/nY)-1}
+          var cp=cg(D.pkv),cgk=cg(D.gkv),pr=function(x){return String(Math.round(x*1000)/10).replace('.',',')+' %'};
+          var tot=function(v){return '+ '+String(Math.round((v[nY]/v[0]-1)*100))+' % gesamt'};
+          var rows=[['Entwicklung '+yr0+' bis '+yr1+': PKV',pr(cp)+' pro Jahr ('+tot(D.pkv)+')'],['Entwicklung '+yr0+' bis '+yr1+': GKV',pr(cgk)+' pro Jahr ('+tot(D.gkv)+')']];
+          var endFor=function(ges){var rvz=isFinite(rn)?Math.min(rn*pc2/100,Math.max(0,(ges-ka.zu-ka.tg-ka.en)/2)):0;return Math.max(0,ges-ka.zu-ka.tg-ka.en-rvz)};
+          var st=0;
+          if(!ka.manual&&kc.hasPkv&&ka.J>=0){
+            var g2=kc.kopf*Math.pow(1+cp,ka.J),e2=endFor(g2);
+            rows.push(['PKV-Beitrag bei Rentenbeginn, mit Ihrer Annahme ('+String(ka.st).replace('.',',')+' % pro Jahr)',eur(ka.ges)]);
+            rows.push(['PKV-Beitrag bei Rentenbeginn, bei gleicher Entwicklung wie '+yr0+' bis '+yr1+' ('+pr(cp)+')',eur(g2)]);
+            rows.push(['Ihr Beitrag im Ruhestand nach Zuschuss: Annahme / wie in der Vergangenheit',eur(ka.end)+' / '+eur(e2)]);
+            st=rows.length-1;
+          }
+          b.push({t:'h',text:'Prognose: Orientierung an der Beitragsentwicklung'});
+          b.push({t:'p',text:'Wir orientieren uns an der Entwicklung der vergangenen Jahre (R+V, Beispiel in der Grafik "Beitragsentwicklung: PKV gegen GKV"'+(S.kv_entw?', siehe oben':'')+'). Daraus ergibt sich eine Hochrechnung bis zum Rentenbeginn. Sie ist eine Orientierung und keine Garantie.'});
+          b.push({t:'kv',rows:rows,strong:st});
+          b.push({t:'small',text:'Die Entwicklung der Vergangenheit ist kein verlässlicher Hinweis auf die Zukunft. Beiträge können stärker oder schwächer steigen. Beispiel der R+V: Mann, Versicherungsbeginn 2014, Eintrittsalter 35.'});
+        })();
+        b.push({t:'img',src:chartAlter(ka).toDataURL('image/png'),ratio:580/1100});
+        b.push({t:'small',text:(ka.manual?'Beitrag im Alter laut Eingabe. ':'Hochrechnung mit '+String(ka.st).replace('.',',')+' % Beitragssteigerung pro Jahr über '+ka.J+' Jahre. ')+'Der Zuschuss der Rentenversicherung muss beantragt werden und ist auf die Hälfte des tatsächlichen Beitrags begrenzt. Modellrechnung, keine Garantie.'})}}
       if(S.kv_pc){
         [['pro','Vorteile eines Wechsels','Einschätzung'],['con','Nachteile und Risiken','Einschätzung']].forEach(function(z){
           var rr=adv.kv[z[0]].filter(function(r){return r.v}).map(function(r){return [r.t,r.v==='wichtig'?'wichtig':r.v==='egal'?'egal':'Sorge']});
@@ -1723,6 +1890,7 @@ function buildReport(){
     if(ss.length){b.push({t:'h',text:'Sachversicherungen: aktueller Stand gegen neuer Stand'});
       ss.forEach(function(s){b.push({t:'cmp',title:s.name,rows:s.rows,tIst:s.tIst,tSoll:s.tSoll,bIst:s.bIst,bSoll:s.bSoll})})}
   }
+  if(adv.mods.zus&&S.zus)zusReport(b);
   if(adv.mods.bu&&S.bu)buReport(b);
   if(adv.mods.pflege&&S.pf)pfReport(b);
   if(adv.mods.vorsorge&&S.vp)vpReport(b);
@@ -1786,7 +1954,7 @@ function advInput(el){
 function advAct(act,btn){
   var i=Number(btn.dataset.i),sp=btn.dataset.sp;
   switch(act){
-    case 'home-mail':cur=null;talkOpen=false;adv=newAdv('');adv.mods={alter:false,anlage:false,kv:false,sach:false,vorsorge:false,pflege:false,bu:false};mailAdv=true;tab='beratung';render();window.scrollTo(0,0);break;
+    case 'home-mail':cur=null;talkOpen=false;adv=newAdv('');adv.mods={alter:false,anlage:false,kv:false,sach:false,vorsorge:false,pflege:false,bu:false,zus:false};mailAdv=true;tab='beratung';render();window.scrollTo(0,0);break;
     case 'adv-fp-from-tax':
       var c=calcAl(),ru=c.prods&&c.prods.filter(function(p){return p.key==='ru'})[0];
       if(ru&&!isNaN(ru.T)){adv.al.fp.b=String(Math.round(ru.T/12*100)/100).replace('.',',');if(talkOpen)renderTalk(true);else renderWizard()}else toast('Bitte zuerst Beitrag und Steuersatz oder die Steuerersparnis bei der Rürup-Rente eintragen.');
@@ -2052,10 +2220,11 @@ function talkSlides(){
   if(adv.mods.kv)S=S.concat(kvSlides());
   S.slice(n2).forEach(function(x){x.area='gesund'});
   var n3=S.length;
+  if(adv.mods.zus)S=S.concat(zusSlides());
   if(adv.mods.bu)S=S.concat(buSlides());
   if(adv.mods.pflege)S=S.concat(pfSlides());
   if(adv.mods.vorsorge)S=S.concat(vpSlides());
-  S.slice(n3).forEach(function(x){if(!x.area)x.area='nachlass'});
+  S.slice(n3).forEach(function(x){if(!x.area)x.area=x.ill==='zus'?'gesund':'nachlass'});
   (function(){
     var tg={'Die drei Schichten der Altersvorsorge':['rente'],'Was wäre Ihnen im Pflegefall wichtig?':['pflege'],'Was passiert, wenn mir etwas passiert?':['vollmacht','testament','tod','unfall'],'Wenn ich nicht mehr selbst entscheiden kann':['vollmacht'],'Wenn ich pflegebedürftig werde':['pflege'],'Wenn etwas passiert':['unfall','arbeit'],'Wenn ich sterbe':['testament','tod']};
     S.forEach(function(x){var t=String(x.title).replace(/<[^>]+>/g,'');if(tg[t]&&!x.leit)x.leit=tg[t]});
@@ -2088,7 +2257,7 @@ function railArea(){
   var id=steps()[advTab]?steps()[advTab][0]:'';
   return id==='al_ist'||id==='al_loes'?'alter':id==='an'?'vermoegen':id==='kv'?'gesund':id==='sach'?'sach':id==='vp'?'nachlass':'';
 }
-function railMod(k){var m=adv.mods;return k==='alter'?m.alter:k==='vermoegen'?m.anlage:k==='gesund'?(m.kv||m.pflege):k==='sach'?m.sach:k==='nachlass'?m.vorsorge:false}
+function railMod(k){var m=adv.mods;return k==='alter'?m.alter:k==='vermoegen'?m.anlage:k==='gesund'?(m.kv||m.pflege||m.zus):k==='sach'?m.sach:k==='nachlass'?m.vorsorge:false}
 function railHtml(){
   var cur=railArea();
   return '<div class="rail" role="group" aria-label="Themen dieser Beratung">'+GANZ.map(function(g){
@@ -2253,7 +2422,7 @@ function ueStatus(k){return (adv.ue&&adv.ue[k])||''}
 function ueGaps(){return ueRows().filter(function(r){var v=ueStatus(r.k);return v==='nein'||v==='teil'})}
 function ueNext(){return ueGaps().filter(function(r){return (adv.top||[]).indexOf(r.k)<0})}
 function topDerive(){
-  var m={alter:false,anlage:false,kv:false,sach:false,vorsorge:false,pflege:false,bu:false};
+  var m={alter:false,anlage:false,kv:false,sach:false,vorsorge:false,pflege:false,bu:false,zus:false};
   (adv.top||[]).forEach(function(k){var r=ueRow(k);if(r)m[r.mod]=true});
   adv.mods=m;
 }
@@ -2817,7 +2986,7 @@ var VP=[
 ];
 var VPSCHRITT={recht:'Mit einem Notar oder einer Rechtsanwältin klären. Wir geben dazu keine Rechtsberatung.',pflege:'Pflegeabsicherung besprechen: Pflegetagegeld oder Pflegerente, passend zu Alter und Gesundheit.',unfall:'Private Unfallversicherung prüfen und Invaliditätssumme festlegen.',bu:'Absicherung der Arbeitskraft prüfen (Berufsunfähigkeit oder Grundfähigkeit).',steuer:'Mit einer Steuerberatung prüfen, ob Erbschaftsteuer anfällt. Wir zeigen die Freibeträge zur Orientierung.',vertrag:'Begünstigte und Absicherung in den bestehenden Verträgen prüfen. Das übernehmen wir gern.'};
 function vpNew(){var i={};VP.forEach(function(b){b[2].forEach(function(r){i[r[0]]=''})});return {i:i,rente:'',verm:'',kinder:false}}
-function anyMod(){var m=adv.mods;return !!(m.alter||m.anlage||m.kv||m.sach||m.vorsorge||m.pflege||m.bu)}
+function anyMod(){var m=adv.mods;return !!(m.alter||m.anlage||m.kv||m.sach||m.vorsorge||m.pflege||m.bu||m.zus)}
 function vpSel(path,val){return '<select data-adv="'+path+'" data-amp="'+esc(val)+'" aria-label="Status">'+[['','offen'],['ja','geregelt'],['teil','teilweise'],['nein','nicht geregelt']].map(function(k){return '<option value="'+k[0]+'"'+(k[0]===val?' selected':'')+'>'+k[1]+'</option>'}).join('')+'</select>'}
 function vpGaps(){
   var g=[];VP.forEach(function(b){b[2].forEach(function(r){var v=adv.vp.i[r[0]];if(v==='nein'||v==='teil')g.push({b:b[1],k:r[0],t:r[2],art:r[3],teil:v==='teil'})})});
@@ -2884,17 +3053,18 @@ function vpReport(b){
 
 /* ================= Startseite der Beratung ================= */
 var homeGruppe='';
-var homeSel={alter:false,anlage:false,kv:false,sach:false,vorsorge:false,pflege:false,bu:false},homeKunde='';
+var homeSel={alter:false,anlage:false,kv:false,sach:false,vorsorge:false,pflege:false,bu:false,zus:false},homeKunde='';
 var HOME_TILES=[
   ['alter','Vorsorge fürs Alter','Gesetzliche Rente, Lücke, Rürup und Fondspolice','sun'],
   ['anlage','Steueroptimiert anlegen','Fondspolice als Steuer-Hülle, Szenarien und Merkmale','rocket'],
   ['kv','Krankenversicherung','GKV mit Zusatz oder PKV, Beitrag, Alter und Risiken','hospital'],
   ['sach','Sachversicherungen','Aktueller Stand gegen neuer Stand mit Ampel','home'],
+  ['zus','Krankenzusatz','Zahn, Brille, Krankenhaus und Vorsorge, ohne PKV-Vergleich','tooth'],
   ['bu','Einkommen absichern','Berufsunfähigkeit: Einkommen, Fixkosten und Lücke','briefcase'],
   ['pflege','Pflege-Beratung','Kosten, Leistungen, Selbstbestimmung und Eigenanteil','users'],
   ['vorsorge','Vorsorge-Check','Vollmachten, Absicherung und Erbe','shieldok']
 ];
-var HOME_ILLU={alter:'alter',anlage:'vermoegen',kv:'gesund',sach:'sach',bu:'bu',pflege:'pflege',vorsorge:'nachlass'};
+var HOME_ILLU={zus:'gesund',alter:'alter',anlage:'vermoegen',kv:'gesund',sach:'sach',bu:'bu',pflege:'pflege',vorsorge:'nachlass'};
 var HOME_PH={einsteiger:['rocket','Ausbildung, Studium, erste Stelle'],arbeitend:['briefcase','Beruf, Familie, Haus'],rentner:['sun','Ruhestand, Vermögen, Familie']};
 function fStart(){
   return '<h3 class="sh">Grunddaten</h3>'+
@@ -2907,6 +3077,7 @@ function fOut(){
   if(adv.mods.anlage)h+=chk('sec.an','Geldanlage: Fondspolice, Szenarien und Merkmale')+chk('sec.an_steuer','Geldanlage: Steuerdiagramm');
   if(adv.mods.kv)h+=chk('sec.kv','Krankenversicherung: Beitragsvergleich und Leistungen')+chk('sec.kv_entw','Krankenversicherung: Beitragsentwicklung')+chk('sec.kv_alter','Krankenversicherung: Beitrag im Alter')+chk('sec.kv_pc','Krankenversicherung: Vorteile, Nachteile und Risiken');
   if(adv.mods.sach)h+=chk('sec.sach','Sachversicherungen: aktueller Stand gegen neuer Stand');
+  if(adv.mods.zus)h+=chk('sec.zus','Krankenzusatz: Was die Kasse zahlt und was Ihnen wichtig ist');
   if(adv.mods.bu)h+=chk('sec.bu','Einkommen: Absicherung bei Berufsunfähigkeit');
   if(adv.mods.pflege)h+=chk('sec.pf','Pflege: Kosten, Leistungen und Eigenanteil');
   if(adv.mods.vorsorge)h+=chk('sec.vp','Vorsorge-Check: Überblick und Empfehlungen');
@@ -2922,7 +3093,7 @@ function fOut(){
 
 /* ================= Übersicht (Dashboard) und Aufgabenliste ================= */
 var aufFilter='alle';
-var IC={pencil:'<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/>',folder:'<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',bubble:'<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/>',book:'<path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5M9 7h6"/>',mic:'<rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',rocket:'<path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>',
+var IC={x:'<path d="M6 6l12 12M18 6L6 18"/>',doc:'<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h7M9 17h7"/>',calendar:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',tooth:'<path d="M8 3c-2.4 0-4 1.8-4 4.4 0 2.6 1.2 3.6 1.8 6C6.4 15.8 6.7 21 8.3 21c1.2 0 1.6-3.6 2.4-4.8.4-.6.9-.8 1.3-.8s.9.2 1.3.8c.8 1.2 1.2 4.8 2.4 4.8 1.6 0 1.9-5.200 2.500-7.600.600-2.400 1.800-3.400 1.800-6C20 4.800 18.400 3 16 3c-1.600 0-2.600.9-4 .9S9.600 3 8 3z"/>',glasses:'<circle cx="6" cy="15" r="4"/><circle cx="18" cy="15" r="4"/><path d="M14 15a2 2 0 0 0-4 0M2.500 13 5 7c.7-1.300 1.400-2 3-2M21.500 13 19 7c-.7-1.300-1.500-2-3-2"/>',bed:'<path d="M2 4v16M2 8h18a2 2 0 0 1 2 2v10M2 17h20M6 8v9"/>',pencil:'<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/>',folder:'<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',bubble:'<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/>',book:'<path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5M9 7h6"/>',mic:'<rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',rocket:'<path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>',
   layers:'<path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M3 13l9 5 9-5"/>',
   sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
   wallet:'<path d="M3 7h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M3 7l2-3h12v3M16 13.5h2"/>',
@@ -3030,7 +3201,7 @@ var RATE=[['','Bewertung'],['wichtig','wichtig'],['egal','egal'],['sorge','Sorge
 var KVROWS=['Arzt und Chefarzt','Krankenhaus (Zimmer und Chefarzt)','Zahn (Behandlung und Zahnersatz)','Brille, Heilpraktiker, Hilfsmittel','Cashback pro leistungsfreiem Jahr'];
 
 function newAdv(k){
-  var o={kunde:k||'',pdfName:'',mods:{alter:true,anlage:false,kv:false,sach:false,vorsorge:false,pflege:false,bu:false},vp:vpNew(),bu:{fix:'',emr:'',has:''},pf:{prio:[],pg:'3',kost:'',heim:'',mgH:'',mgS:'',bed:false,wo:'',partner:'',lage:{},ort:'',bestand:'',opt:{},offen:[],fragen:'',next:''},leben:{pos:'',kinder:false},folge:{text:'',notiz:''},gesp:{f1:'',f2:'',f3:'',klar:'',termin:''},wenn:{a:'',b:'',c:''},direct:false,kd:{gruppe:homeGruppe,fam:'',kinder:'',alter:'',beruf:'',netto:'',wohnen:''},ue:{},ent:{},top:[],wuensche:[],
+  var o={kunde:k||'',pdfName:'',mods:{alter:true,anlage:false,kv:false,sach:false,vorsorge:false,pflege:false,bu:false,zus:false},vp:vpNew(),bu:{fix:'',emr:'',has:''},zus:{pri:{},ist:{},beitrag:'',kosten:''},pf:{prio:[],pg:'3',kost:'',heim:'',mgH:'',mgS:'',bed:false,wo:'',partner:'',lage:{},ort:'',bestand:'',opt:{},offen:[],fragen:'',next:''},leben:{pos:'',kinder:false},folge:{text:'',notiz:''},gesp:{f1:'',f2:'',f3:'',klar:'',termin:''},wenn:{a:'',b:'',c:''},direct:false,kd:{gruppe:homeGruppe,fam:'',kinder:'',alter:'',beruf:'',netto:'',wohnen:''},ue:{},ent:{},top:[],wuensche:[],
     al:{alter:'',rentenalter:'67',lebenserw:'87',infl:'2',modus:'heute',gehalt:'',zielPct:'100',brutto:'',abzug:'15',rente:'',bav:'',ra:'5',re:'4',steuer:'',
       have:{s1:true,s2:false,s3:false},
       ru:{on:true,b:'',r:'',tOver:''},fp:{on:true,b:'',r:''},ad:{on:false,b:'',r:'',z:''},quelle:''},
@@ -3039,7 +3210,7 @@ function newAdv(k){
       rente:'',alterJahre:'',stg:'3',alterGesamt:'',zuschlag:'',tagegeld:'',entlastung:'',rvPct:'8,55',gkvAlter:'',
       pro:KVPRO.map(function(t){return {t:t,v:''}}),con:KVCON.map(function(t){return {t:t,v:''}})},
     brief:{anrede:'',betreff:'Ihre Beratung und die Angebote',besprochen:'',benoetigt:'',kennzahlen:true,anlagen:'Beratungsunterlage, Angebote',punkte:''},
-    erg:'offen',grund:'',ber:'',fil:'',sach:{},ganz:{},sec:{einstieg:true,leben:false,vp:true,pf:true,bu:true,ganz:false,rente:true,al_ist:true,al_zeit:true,al_loes:true,an:true,an_steuer:true,kv:true,kv_entw:true,kv_alter:true,kv_pc:true,sach:true,summe:true,notiz:true},notiz:'',wvDays:'30'};
+    erg:'offen',grund:'',ber:'',fil:'',sach:{},ganz:{},sec:{zus:true,einstieg:true,leben:false,vp:true,pf:true,bu:true,ganz:false,rente:true,al_ist:true,al_zeit:true,al_loes:true,an:true,an_steuer:true,kv:true,kv_entw:true,kv_alter:true,kv_pc:true,sach:true,summe:true,notiz:true},notiz:'',wvDays:'30'};
   SACH.forEach(function(s){o.sach[s[0]]={on:false,rows:[],bIst:'',bSoll:'',tIst:'',tSoll:''}});
   o.sach.pkv={on:true,rows:rowsFromKat('pkv'),bIst:'',bSoll:'',tIst:'',tSoll:''};
   return o;
@@ -3050,6 +3221,7 @@ function steps(){
   if(adv.mods.anlage)s.push(['an','Geldanlage']);
   if(adv.mods.kv)s.push(['kv','Krankenversicherung']);
   if(adv.mods.sach)s.push(['sach','Sachversicherungen']);
+  if(adv.mods.zus)s.push(['zus','Krankenzusatz']);
   if(adv.mods.bu)s.push(['bu','Einkommen']);
   if(adv.mods.pflege)s.push(['pf','Pflege']);
   if(adv.mods.vorsorge)s.push(['vp','Vorsorge-Check']);

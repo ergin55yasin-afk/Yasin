@@ -3,9 +3,10 @@ var TITEL={
   start:['Start',''],kunden:['Kunden','Alle Kundennummern mit Terminen, Aufgaben und Beratungen'],kunde:['Kunde','Kundenprofil'],
   beratung:['Beratung','Ganzheitlich beraten, vom Anliegen zur Vereinbarung'],wissen:['Beraterwissen','Lexikon, Kernaussagen und Beratungsfragen'],
   aufgaben:['Aufgaben','Fällig, wartend und später'],pipeline:['Pipeline','Gespräche nach Ergebnis'],revier:['Revier','Filialen und Bankberater'],
-  copilot:['Copilot','Einträge per Text oder Sprache anlegen'],training:['Training','Einwände und Gespräche üben'],wissenki:['Wissens-Chat','Fragen an dein Beraterwissen']
+  copilot:['Copilot','Einträge per Text oder Sprache anlegen'],training:['Training','Einwände und Gespräche üben'],wissenki:['Wissens-Chat','Fragen an dein Beraterwissen'],
+  akademie:['Vertriebsakademie','Gesprächsführung, Fragetechnik, Einwände und Produktwissen'],vorbereitung:['Gesprächsvorbereitung','Termin in wenigen Schritten vorbereiten']
 };
-var NAV_GRUPPE={kunde:'kunden',revier:'pipeline',wissenki:'wissen'};
+var NAV_GRUPPE={kunde:'kunden',revier:'pipeline',wissenki:'wissen',akademie:'wissen',vorbereitung:'beratung'};
 var NAV_HAUPT=[['start','Start','compass'],['kunden','Kunden','users'],['beratung','Beratung','play'],['wissen','Wissen','book']];
 var NAV_ARBEIT=[['aufgaben','Aufgaben','task'],['pipeline','Pipeline','chart'],['copilot','Copilot','bubble'],['training','Training','mic']];
 function navBuild(){

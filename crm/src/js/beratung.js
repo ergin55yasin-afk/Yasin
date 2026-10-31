@@ -8,7 +8,7 @@ var THEMEN=[
  ['pflege','Pflegevorsorge','Wie möchten Sie im Pflegefall versorgt werden?','users','pflege','pflege'],
  ['familie','Familie absichern','Was braucht Ihre Familie, wenn Ihnen etwas zustößt?','family','','tod'],
  ['kranken','Krankenversicherung','Gesetzlich mit Zusatz oder privat: was passt zu Ihnen?','hospital','kv','kranken'],
- ['zusatz','Krankenzusatz','Zahnersatz, Brille, Krankenhaus: was ist Ihnen wichtig?','tooth','','kranken'],
+ ['zusatz','Krankenzusatz','Zahnersatz, Brille, Krankenhaus: was ist Ihnen wichtig?','tooth','zus','kranken'],
  ['unfall','Unfallrisiken','Was würde sich nach einem schweren Unfall ändern?','bandage','','unfall'],
  ['sach','Wohnen und Sachwerte','Haus, Hausrat, Haftung, Auto: passt die Absicherung?','home','sach','hausrat'],
  ['anlage','Geldanlage','Wofür soll Ihr Geld arbeiten, und wie lange?','trend','anlage','anlage'],
@@ -49,7 +49,7 @@ function laufendFuer(k){return laufendListe().filter(function(s){return k&&s.kun
 function kmode(){return !!(cur&&cur.modus==='kunde'&&tab==='beratung')}
 function neueSitzung(k,anl){
   var s={id:uid(),kunde:k||'',anliegen:anl||'',anliegenText:'',themen:{},bedarf:{},antworten:{},notiz:'',offen:[],doku:{vereinbarungen:'',next:'',termin:'',gesehen:0},step:'anliegen',besucht:{anliegen:1},erledigt:{},status:'laufend',modus:'berater',created:Date.now(),updated:Date.now(),adv:newAdv(k||'')};
-  s.adv.mods={alter:false,anlage:false,kv:false,sach:false,vorsorge:false,pflege:false,bu:false};
+  s.adv.mods={alter:false,anlage:false,kv:false,sach:false,vorsorge:false,pflege:false,bu:false,zus:false};
   if(anl){s.themen[anl]={quelle:'anliegen',ts:Date.now()}}
   db.laufend.push(s);return s;
 }
@@ -58,7 +58,7 @@ function oeffneSitzung(s){
   talkOpen=true;tab='beratung';
 }
 function syncMods(){
-  var m={alter:false,anlage:false,kv:false,sach:false,vorsorge:false,pflege:false,bu:false};
+  var m={alter:false,anlage:false,kv:false,sach:false,vorsorge:false,pflege:false,bu:false,zus:false};
   Object.keys(cur.themen).forEach(function(k){var d=themaDef(k);if(d&&m.hasOwnProperty(d[4]))m[d[4]]=true});
   adv.mods=m;
 }
@@ -69,7 +69,7 @@ function sessionOffen(s){var o=(s.offen||[]).filter(function(x){return !x.done})
 /* ---- Schritte ---- */
 function modulSlides(mod){
   var save=adv.mods,sd=adv.direct;
-  adv.mods={alter:false,anlage:false,kv:false,sach:false,vorsorge:false,pflege:false,bu:false};adv.mods[mod]=true;adv.direct=true;
+  adv.mods={alter:false,anlage:false,kv:false,sach:false,vorsorge:false,pflege:false,bu:false,zus:false};adv.mods[mod]=true;adv.direct=true;
   var S=talkSlides().filter(function(s){return (s.st||4)===4});
   adv.mods=save;adv.direct=sd;return S;
 }
@@ -106,7 +106,7 @@ function viewBeratung(){
   if(cur&&talkOpen)return shellHtml();
   var L=laufendListe(),fertig=(db.laufend||[]).filter(function(s){return s.status==='abgeschlossen'}).sort(function(a,b){return b.updated-a.updated}).slice(0,6);
   var h='<section class="bhero"><div><p class="eyebrow">Neues Beratungsgespräch</p><h2>Womit kommt der Kunde heute?</h2><p class="muted">Die Beratung beginnt beim Anliegen des Kunden. Weitere Themen kommen nur dazu, wenn Sie sie gemeinsam wählen.</p>'+
-    '<label class="fl bh-k"><span>Kundennummer <em class="opt">optional</em></span><input type="text" id="bs-k" value="'+esc(homeKunde)+'" maxlength="20" placeholder="z. B. 10482" autocomplete="off" list="kunden-list"></label></div></section>';
+    '<label class="fl bh-k"><span>Kundennummer <em class="opt">optional</em></span><input type="text" id="bs-k" value="'+esc(homeKunde)+'" maxlength="20" placeholder="z. B. 10482" autocomplete="off" list="kunden-list"></label><button class="lnk" data-act="tab" data-tab="vorbereitung">'+ico('check',16)+'Termin zuerst vorbereiten</button></div></section>';
   h+='<div class="tcards">'+THEMEN.map(function(t){return '<button class="tcard" data-act="bs-neu" data-a="'+t[0]+'" data-kin="1"><span class="tc-ill">'+themaIll(t[0])+'</span><span class="tc-b"><span class="tc-ic" aria-hidden="true">'+ico(t[3],20)+'</span><strong>'+esc(t[1])+'</strong><span>'+esc(t[2])+'</span></span></button>'}).join('')+'</div>';
   h+=sec('Laufende Beratungen',L.length,'',L.length?'<ul class="runs">'+L.map(laufKarte).join('')+'</ul>':leer('Keine laufende Beratung. Laufende Beratungen werden automatisch gespeichert und erscheinen hier.'));
   if(fertig.length)h+=sec('Zuletzt abgeschlossen',fertig.length,'','<ul class="runs">'+fertig.map(laufKarte).join('')+'</ul>');
@@ -273,7 +273,7 @@ function advLoadText(t){
 function waitMail(id){
   var t=db.todos.find(function(x){return x.id===id});if(!t)return;
   closeSheet();cur=null;talkOpen=false;
-  adv=newAdv(t.kunde);adv.mods={alter:false,anlage:false,kv:false,sach:false,vorsorge:false,pflege:false,bu:false};
+  adv=newAdv(t.kunde);adv.mods={alter:false,anlage:false,kv:false,sach:false,vorsorge:false,pflege:false,bu:false,zus:false};
   var b=adv.brief;b.betreff='Kurze Nachfrage';b.besprochen='Ich wollte kurz nachfragen, wie es bei Ihnen mit diesem Punkt aussieht: '+t.text;b.benoetigt='';b.kennzahlen=false;b.anlagen='';
   mailAdv=true;tab='beratung';render();window.scrollTo(0,0);
 }

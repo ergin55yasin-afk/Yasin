@@ -1,4 +1,4 @@
-window.__crm={buildReport:function(){return buildReport()},renderHtmlReport:renderHtmlReport,pfCalc:pfCalc,pfBruecke:pfBruecke,pfHeimJahre:pfHeimJahre,renderPdf:renderPdf,bsOf:bsOf,REGEL:REGEL,adv:function(){return adv}};
+window.__crm={buildReport:function(){return buildReport()},renderHtmlReport:renderHtmlReport,pfCalc:pfCalc,pfBruecke:pfBruecke,pfHeimJahre:pfHeimJahre,renderPdf:renderPdf,buildPrepReport:function(l,k){return buildPrepReport(l,k)},prep:function(){return prep},bsOf:bsOf,REGEL:REGEL,adv:function(){return adv}};
 try{var thm=localStorage.getItem('crm.theme');if(thm==='dark'||thm==='light')document.documentElement.setAttribute('data-theme',thm)}catch(e){}
 load();
 navBuild();

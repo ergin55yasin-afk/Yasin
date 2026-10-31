@@ -86,6 +86,8 @@ function viewStart(){
   // Fristen
   var rad=radarList().filter(function(o){return o.i.st==='verpasst'||o.i.st==='dringend'});
   var fb=rad.length?'<ul class="tasks">'+rad.slice(0,4).map(function(o){return '<li class="task late"><span class="dot-i" aria-hidden="true">'+ico('clock',16)+'</span><button class="task-b" data-act="open-vertrag" data-id="'+o.v.id+'"><span class="task-t">'+esc(o.v.sparte)+': '+(o.i.st==='verpasst'?'Kündigungsfrist verpasst':'Kündigung bis '+fmtFull(o.i.bis))+'</span><span class="task-m"><b>'+esc(o.v.kunde)+'</b> · läuft ab '+fmtFull(o.v.ablauf)+'</span></button></li>'}).join('')+'</ul>':'';
+  h+='<section class="dbsec weg3" aria-label="Weg zur Beratung"><h3 class="dbh">Vom Wissen zum Gespräch</h3><div class="dbsub">'+
+    [['akademie','book','Wissen auffrischen','Vertriebsakademie, Lexikon, Einwände üben','#475569','1'],['vorbereitung','check','Gespräch vorbereiten','Termin in wenigen Schritten vorbereiten','#6B4E9B','2'],['beratung','play','Beratung führen','Das Gespräch mit dem Kunden','#2B50C8','3']].map(function(x){return '<button class="dbs" style="--hc:'+x[4]+'" data-act="tab" data-tab="'+x[0]+'"><span class="dbn">'+x[5]+'</span><span class="dbi">'+ico(x[1],24)+'</span><span class="dbt"><strong>'+x[2]+'</strong><small>'+x[3]+'</small></span></button>'}).join('')+'</div></section>';
   h+='<div class="dash"><div class="dash-main">'+
     sec('Termine',ter.length,'<button class="lnk" data-act="add-termin">'+ico('plus',16)+'Termin</button>',tb)+
     sec('Laufende Beratungen',lauf.length,'<button class="lnk" data-act="tab" data-tab="beratung">Alle</button>',lb)+

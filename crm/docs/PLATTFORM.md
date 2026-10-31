@@ -20,6 +20,10 @@ Die App bleibt eine einzelne HTML-Datei (lauffähig als Artifact). Entwickelt wi
 | `src/js/kunden.js` | Kundenübersicht und Kundenprofil |
 | `src/js/beratung.js` | Beratungsstrecke, Sitzungen, Kundenmodus, Dokumentation |
 | `src/js/ueberblick.js` | Persönlicher Überblick: Anlass-Fragen, Lebensbereiche (`FELDER`), Zuordnung je Anliegen (`ANL_UEB`), Status und Wiedervorlage |
+| `src/js/akademie.js` | Vertriebsakademie (aus dem zweiten Chat): Lerneinheiten, Suche, Favoriten, Übungen |
+| `src/js/zusatz.js` | Krankenzusatz-Modul (aus dem zweiten Chat), Thema „Krankenzusatz“ |
+| `src/js/vorbereitung.js` | Gesprächsvorbereitung (aus dem zweiten Chat): Anlass, Themen, Text, Leitfaden, zwei PDFs |
+| `src/css/zusammen.css` | Gestaltung der übernommenen Bereiche |
 | `src/js/training.js` | Gesprächstraining: Szenarien (`TR_SZEN`), Modus frei oder mit Coaching, Coaching-Hinweise, strukturiertes Feedback, Verlauf |
 | `src/js/wissen-inhalte.js` | Startinhalte des Lexikons (KI-Entwürfe) |
 | `src/js/wissen.js` | Lexikon: Suche, Filter, Redaktion, Historie, Verknüpfung zur Beratung |
@@ -101,4 +105,5 @@ Die Daten liegen nur im Browser des jeweiligen Geräts. Ein öffentlich geteilte
 | `alle-module.js` | 5 | alle 12 Themen in einer Beratung, ältere Beratungsdatei laden |
 | `bug-fbcopy.js` | 1 | Sicherung kopieren (früherer Fehler) |
 | `ueberblick.js` | 81 | Anlass, Überblick, Begründungen, Entscheidungen, Wiedervorlage, Speichern, Kundenmodus, Bericht, 3 Bildschirmgrößen |
+| `zusammen.js` | 44 | Akademie, Gesprächsvorbereitung mit beiden PDFs, Krankenzusatz in Beratung und Bericht, KV-Vergleichskarten, Startseite, Desktop und Handy |
 | `training.js` | 84 | Szenarien, beide Modi, Glühbirne öffnen und schließen, Weiterführen nach dem Coaching, Feedback mit Zitatprüfung, Verlauf, Fehlerfall (KI simuliert) |
