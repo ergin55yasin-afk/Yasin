@@ -299,7 +299,7 @@ function wkUnit(id){
     h+=wkSec('Kurz erklärt',esc(u.s),'')+wkSec('Für wen relevant',esc(u.fur),'')+wkSec('Nutzen',esc(u.nutzen),'')+wkSec('Grenzen und Vorsicht',esc(u.gren),'')+wkSec('Fragen für das Gespräch',wkUl(u.frag),'wkhl')+
       wkSec('Typische Einwände','<div class="wkl">'+(u.eid||[]).map(function(i){var e=KN_IDX[i];return e?'<button class="wkli" data-act="wk-unit" data-id="'+i+'" style="--hc:#B4506B"><b>'+esc(e.t)+'</b></button>':''}).join('')+'</div>','')+
       wkSec('Allgemeines Wissen oder konkrete Tarifinfo?','<p>'+esc(u.tarif)+'</p><p class="hint-t">Diese Seite enthält allgemeines Wissen. Konkrete Tarife, Beiträge, aktuelle Zahlen und Bedingungen müssen in den aktuellen Unterlagen geprüft werden.</p>','wkwarn')+wkSrc(u);
-    return h+'<div class="plbar" style="margin-top:12px"><button class="btn small primary" data-act="wk-go" data-id="vorb">Gespräch vorbereiten</button><button class="btn small" data-act="wk-askunit" data-id="'+id+'">KI zu diesem Thema fragen</button></div>';
+    return h+'<div class="plbar" style="margin-top:12px"><button class="btn small primary" data-act="wk-go" data-id="vorbereitung">Gespräch vorbereiten</button><button class="btn small" data-act="wk-askunit" data-id="'+id+'">KI zu diesem Thema fragen</button></div>';
   }
   if(u.light){
     h+=wkSec('Kurz erklärt',esc(u.s),'')+wkSec('Wichtigste Regeln',wkUl(u.r),'')+wkSec('Merksatz',wkMerk(u),'');

@@ -4926,7 +4926,7 @@ function wkUnit(id){
     h+=wkSec('Kurz erklärt',esc(u.s),'')+wkSec('Für wen relevant',esc(u.fur),'')+wkSec('Nutzen',esc(u.nutzen),'')+wkSec('Grenzen und Vorsicht',esc(u.gren),'')+wkSec('Fragen für das Gespräch',wkUl(u.frag),'wkhl')+
       wkSec('Typische Einwände','<div class="wkl">'+(u.eid||[]).map(function(i){var e=KN_IDX[i];return e?'<button class="wkli" data-act="wk-unit" data-id="'+i+'" style="--hc:#B4506B"><b>'+esc(e.t)+'</b></button>':''}).join('')+'</div>','')+
       wkSec('Allgemeines Wissen oder konkrete Tarifinfo?','<p>'+esc(u.tarif)+'</p><p class="hint-t">Diese Seite enthält allgemeines Wissen. Konkrete Tarife, Beiträge, aktuelle Zahlen und Bedingungen müssen in den aktuellen Unterlagen geprüft werden.</p>','wkwarn')+wkSrc(u);
-    return h+'<div class="plbar" style="margin-top:12px"><button class="btn small primary" data-act="wk-go" data-id="vorb">Gespräch vorbereiten</button><button class="btn small" data-act="wk-askunit" data-id="'+id+'">KI zu diesem Thema fragen</button></div>';
+    return h+'<div class="plbar" style="margin-top:12px"><button class="btn small primary" data-act="wk-go" data-id="vorbereitung">Gespräch vorbereiten</button><button class="btn small" data-act="wk-askunit" data-id="'+id+'">KI zu diesem Thema fragen</button></div>';
   }
   if(u.light){
     h+=wkSec('Kurz erklärt',esc(u.s),'')+wkSec('Wichtigste Regeln',wkUl(u.r),'')+wkSec('Merksatz',wkMerk(u),'');
@@ -5399,7 +5399,7 @@ function gvStep1(){
   return '<h3 class="gvh3">Welche Themen möchtest du ansprechen?</h3><p class="hint-t">Mehrere möglich. Wähle nur, was bei diesem Kunden passt.</p><div class="gvtiles">'+GV_PROD.map(function(p){var on=!!prep.sel[p.k];return '<button class="gvt gvp'+(on?' on':'')+'" style="--hc:'+p.col+'" data-act="gv-prod" data-k="'+p.k+'" aria-pressed="'+on+'"><span class="gvti">'+ico(p.ic,22)+'</span><span><strong>'+p.n+'</strong><small>'+p.kurz+'</small></span><i class="gvck">'+(on?'✓':'')+'</i></button>'}).join('')+'</div>';
 }
 function gvStep2(){
-  return '<h3 class="gvh3">Was sollte die KI über diesen Kunden und das Gespräch wissen?</h3><p class="hint-t">Optional. Ein paar Sätze genügen. Beispiel: Anlass, bestehende Verträge, die unverändert bleiben, Angebote, Tarife mit Beiträgen.</p><textarea id="gvtxt" class="gxtxt" data-prep="txt" rows="8" maxlength="8000" placeholder="Der Kunde kommt wegen einer Vertragsfälligkeit. Seine Sachversicherungen sind in Ordnung und bleiben unverändert. Ich möchte ihm ein Angebot zur Krankenzusatzversicherung mitgeben ...">'+esc(prep.txt)+'</textarea><div class="gxrow"><button class="btn" data-act="gv-ex">Beispieltext einfügen</button></div>';
+  return '<h3 class="gvh3">Was solltest du für die Vorbereitung festhalten?</h3><p class="hint-t">Optional. Ein paar Sätze genügen. Beispiel: Anlass, bestehende Verträge, die unverändert bleiben, Angebote, Tarife mit Beiträgen.</p><textarea id="gvtxt" class="gxtxt" data-prep="txt" rows="8" maxlength="8000" placeholder="Der Kunde kommt wegen einer Vertragsfälligkeit. Seine Sachversicherungen sind in Ordnung und bleiben unverändert. Ich möchte ihm ein Angebot zur Krankenzusatzversicherung mitgeben ...">'+esc(prep.txt)+'</textarea><div class="gxrow"><button class="btn" data-act="gv-ex">Beispieltext einfügen</button></div>';
 }
 function gvResult(){
   var A=prep.A,sel=gvSelKeys(),P=sel.map(gvProd),h='',unv=A.bestand.filter(function(b){return b.unv});
