@@ -21,6 +21,9 @@ Die App bleibt eine einzelne HTML-Datei (lauffähig als Artifact). Entwickelt wi
 | `src/js/beratung.js` | Beratungsstrecke, Sitzungen, Kundenmodus, Dokumentation |
 | `src/js/ueberblick.js` | Persönlicher Überblick: Anlass-Fragen, Lebensbereiche (`FELDER`), Zuordnung je Anliegen (`ANL_UEB`), Status und Wiedervorlage |
 | `src/js/akademie.js` | Vertriebsakademie (aus dem zweiten Chat): Lerneinheiten, Suche, Favoriten, Übungen |
+| `src/js/akademie-quellen.js` | Quellenverzeichnis `AQ` (52 Quellen mit Frage, Methode, Ergebnis, Grenzen, Praxisbezug), Evidenzstufen `AQ_STUFEN`, Liste nicht direkt geprüfter DOIs `AQ_DOI_OFFEN` |
+| `src/js/akademie-tief-1.js` … `-3.js` | 17 wissenschaftlich vertiefte Einheiten (`TIEF`), Gliederung A bis H, Aussagen mit Evidenzstufe und Art (direkt untersucht, übertragen, Erfahrungsregel) |
+| `src/js/akademie-ui.js` | Modi Schnell, Praxis, Experte, Üben; Fallübung mit Rückmeldung zu acht Kriterien; Selbsttest; Vertiefungsfragen; Quellenverzeichnis; Lernstand |
 | `src/js/zusatz.js` | Krankenzusatz-Modul (aus dem zweiten Chat), Thema „Krankenzusatz“ |
 | `src/js/vorbereitung.js` | Gesprächsvorbereitung (aus dem zweiten Chat): Anlass, Themen, Text, Leitfaden, zwei PDFs |
 | `src/css/zusammen.css` | Gestaltung der übernommenen Bereiche |
@@ -38,6 +41,7 @@ Bestehende Daten werden ohne Verlust übernommen (geprüft im Test „Altdaten b
 - `laufend[]`: Beratungssitzungen mit Anliegen, Anlass (`anlass`), Lebensbereichen aus dem Überblick (`felder`), Themen (mit Herkunft: Anliegen, im Gespräch gewählt, aus einem Gesprächsansatz gewählt), Bedarfsstand je Thema, Antworten, offenen Fragen, Vereinbarungen, nächstem Schritt, interner Notiz, Schrittfortschritt und den Rechner-Eingaben. Gespeichert wird automatisch nach jeder Eingabe. Der PDF-Name und die Mail-Texte werden bewusst nicht gespeichert.
 - `lexikon`: Einträge mit Sparte, Inhaltsbereich, Quelle, Prüfdatum, Status, verantwortlicher Person, Kundeneignung, Favorit, Ursprung (KI oder von Hand) und Änderungshistorie.
 - `training[]`: frühere Übungsgespräche mit Feedback (höchstens 30).
+- `akademie`: Lernstand der Vertiefungen (`gelesen{id:Datum}`, `tests{id:{r,n,d}}`, `uebungen{id:Anzahl}`).
 - Termine: Uhrzeit und Anliegen. Aufgaben: Priorität.
 
 ## Bedarfsstand: was die App unterscheidet
@@ -66,6 +70,16 @@ Im ersten Schritt fragt die App kurz nach dem Anlass: was der Kunde klären möc
 | heute nicht vertiefen | bewusst nicht weiter besprochen | ja |
 
 Ein nicht angesprochener Bereich wird nie als Lücke oder Chance angezeigt. „Beim Anliegen bleiben“ führt direkt zur Beratung des Anliegens und wird in der Zusammenfassung vermerkt.
+
+## Akademie: wissenschaftliche Vertiefung
+
+17 Einheiten in fünf Bereichen (Zuhören und Spiegeln mit 8 Einheiten, Beziehung und Wahrnehmung, Gesprächsführung, Entscheidung und Erklärung, Lernen). Jede Einheit hat Version, Stand und Prüfdatum. Nach dem Prüfdatum erscheint „Überprüfung fällig“.
+
+- **Neue Einheit:** `T({...})` in einer `akademie-tief-*.js` aufrufen. Felder siehe Kopf von `akademie-tief-1.js`. Quellen nur über Schlüssel aus `AQ`. Aussagen mit `S(stufe, text, [quellen], art)`.
+- **Neue Quelle:** Eintrag in `AQ`, nur mit selbst geprüften Angaben. Nicht direkt geprüfte DOIs in `AQ_DOI_OFFEN`, teilweise geprüfte Quellen mit `status:'teilgeprueft'`.
+- **Evidenz und Empfehlung getrennt:** Abschnitt C enthält nur Forschungsaussagen, Abschnitt D die Praxisempfehlung.
+- **KI:** Vertiefungsfragen bekommen den Einheitstext und nur die Quellen dieser Einheit, mit der Anweisung, nichts zu erfinden. Ohne KI zeigt die App die passenden Abschnitte der Einheit. Die Übungsrückmeldung fällt ohne KI auf eine Regelprüfung zurück und ist so gekennzeichnet. KI-Antworten sind als nicht fachlich geprüft markiert.
+- **Recherchegrenze:** Fachdatenbanken (Crossref, OpenAlex, Semantic Scholar) waren aus der Arbeitsumgebung nicht erreichbar. Geprüft wurde über Websuche (Verlagsseiten, Abstracts, Repositorien). Volltexte wurden nicht ausgewertet. Stand 31.10.2026.
 
 ## Gesprächstraining
 
@@ -106,4 +120,5 @@ Die Daten liegen nur im Browser des jeweiligen Geräts. Ein öffentlich geteilte
 | `bug-fbcopy.js` | 1 | Sicherung kopieren (früherer Fehler) |
 | `ueberblick.js` | 81 | Anlass, Überblick, Begründungen, Entscheidungen, Wiedervorlage, Speichern, Kundenmodus, Bericht, 3 Bildschirmgrößen |
 | `zusammen.js` | 44 | Akademie, Gesprächsvorbereitung mit beiden PDFs, Krankenzusatz in Beratung und Bericht, KV-Vergleichskarten, Startseite, Desktop und Handy |
+| `akademie.js` | 58 | Vertiefungen: Modi, Evidenzstufen, Quellenverzeichnis mit Filter und Suche, Selbsttest und Lernstand, Fallübung mit und ohne KI, Vertiefungsfragen, alle 17 Einheiten in 4 Modi auf dem Handy ohne seitliches Scrollen |
 | `training.js` | 84 | Szenarien, beide Modi, Glühbirne öffnen und schließen, Weiterführen nach dem Coaching, Feedback mit Zitatprüfung, Verlauf, Fehlerfall (KI simuliert) |

@@ -230,7 +230,7 @@ function wkCardList(list){
   if(!list.length)return '<p class="hint-t">Dazu habe ich keine passende Lerneinheit gefunden. Stelle die Frage oben im Fragefeld, dann versucht die KI eine Antwort.</p>';
   return '<div class="wkl">'+list.map(function(u){var c=knCat(u.c);return '<button class="wkli" data-act="wk-unit" data-id="'+u.id+'" style="--hc:'+c.col+'"><b>'+esc(u.t)+'</b><small>'+esc(c.id+' '+c.t)+(u.light?' · Kurzfassung':u.ew?' · Einwand':u.prod?' · Produkt':'')+'</small></button>'}).join('')+'</div>';
 }
-function wkSearchPaint(){var el=$('wk-sr');if(!el)return;var s=wk.s;el.innerHTML=s.trim().length<2?'':'<p class="hint-t" style="margin:8px 0 4px">'+wkSearch(s,8).length+' Treffer</p>'+wkCardList(wkSearch(s,8))}
+function wkSearchPaint(){var el=$('wk-sr');if(!el)return;var s=wk.s;if(s.trim().length<2){el.innerHTML='';return}var t=tfSearch(s,4),k=wkSearch(s,8);el.innerHTML='<p class="hint-t" style="margin:8px 0 4px">'+(k.length+t.length)+' Treffer</p>'+(t.length?'<div class="wkl">'+t.map(tfCard).join('')+'</div>':'')+wkCardList(k)}
 function wkHome(){
   var h='',fav=wkFav().filter(function(id){return KN_IDX[id]});
   h+='<section class="wkask"><label for="wk-q"><b>Was möchtest du lernen oder wissen?</b></label>'+
@@ -241,6 +241,7 @@ function wkHome(){
   h+='<div class="wksearch"><label for="wk-s" class="sr">Lerneinheiten suchen</label><input id="wk-s" type="search" data-wk="s" placeholder="Lerneinheit suchen (zum Beispiel Einwand, Begrüßung, Pflege)" value="'+esc(wk.s)+'"></div><div id="wk-sr"></div>';
   if(fav.length)h+='<h3 class="wkh">Favoriten</h3>'+wkCardList(fav.map(function(id){return KN_IDX[id]}));
   h+='<h3 class="wkh">Schnellzugriff</h3><div class="plbar"><button class="chip" data-act="wk-cat" data-id="G">Einwände</button><button class="chip" data-act="wk-unit" data-id="b1">Erster Eindruck</button><button class="chip" data-act="wk-unit" data-id="b3">Begrüßung</button><button class="chip" data-act="wk-cat" data-id="D">Fragetechniken</button><button class="chip" data-act="wk-cat" data-id="M">Produktwissen</button><button class="chip" data-act="wk-go" data-id="training">Training</button></div>';
+  h+=tfHomeSection();
   h+='<h3 class="wkh">Alle Bereiche</h3><div class="wkcats">'+KN_CATS.map(function(c){
     var n=KN.filter(function(u){return u.c===c.id}).length,full=KN.filter(function(u){return u.c===c.id&&!u.light}).length;
     return '<button class="wkcat" data-act="wk-cat" data-id="'+c.id+'" style="--hc:'+c.col+'"><span class="wkci">'+ico(c.ic,22)+'</span><span><b>'+c.id+'  '+esc(c.t)+'</b><small>'+esc(c.d)+'</small><em>'+n+' Themen'+(full<n?', davon '+full+' ausführlich':'')+'</em></span></button>';
@@ -251,6 +252,7 @@ function wkAnsHtml(){
   var a=wk.ans,h='<div class="wkans"><div class="wkansh"><b>Antwort</b><span>'+(a.src==='ki'?'Claude, mit Bezug auf die Akademie':'Passende Lerneinheiten, keine KI')+'</span></div>';
   if(a.src==='ki')h+='<div>'+chFmt(a.t)+'</div>';else h+='<p style="margin:0 0 8px">'+esc(a.t)+'</p>';
   if(a.units&&a.units.length)h+='<h4>Passende Lerneinheiten</h4>'+wkCardList(a.units);
+  var tu=tfSearch(wk.q,3);if(tu.length)h+='<h4>Wissenschaftlich vertieft</h4><div class="wkl">'+tu.map(tfCard).join('')+'</div>';
   h+='<p class="hint-t">Allgemeines Wissen. Konkrete Tarifdaten, aktuelle Zahlen und Rechtsfragen bitte in den Unterlagen prüfen.</p></div>';
   return h;
 }
@@ -262,6 +264,7 @@ function wkAsk(){
   getSample(function(sample){
     if(!sample){local();return}
     var ctx=units.map(function(u){return '### '+u.t+'\n'+(u.s||'')+'\n'+(u.r||[]).join('\n')}).join('\n\n').slice(0,6000);
+    var tu=tfSearch(q,2);if(tu.length)ctx+='\n\n'+tu.map(function(u){return '### Vertiefung: '+u.titel+'\n'+u.schnell.kern.join('\n')+'\nEvidenz: '+u.C.aussagen.map(function(a){return '['+a.s+'] '+a.t+(a.q.length?' ('+a.q.map(aqKurz).join('; ')+')':'')}).join(' ')}).join('\n\n').slice(0,5000);
     var W=wissenList().map(function(w){return '### '+w.titel+'\n'+w.text}).join('\n\n').slice(0,20000);
     var pr='Du bist Trainer in einer Vertriebs- und Beratungsakademie für einen Versicherungsvertreter (R&V, Zusammenarbeit mit einer Volksbank, Deutschland). Beantworte die Frage auf Deutsch, praxisnah, ehrlich und ohne manipulative Methoden. Gliedere mit diesen fetten Überschriften: **Kurzantwort**, **Einordnung**, **So kannst du es sagen** (kurzes Beispiel mit fiktivem Kunden, nie echte Namen), **Typische Fehler**, **Annahmen und offene Punkte**. Trenne klar: Allgemeinwissen, konkrete Tarifinformationen (nur aus der Wissensdatenbank, sonst sage, dass sie in den Tarifunterlagen geprüft werden müssen), Annahmen und aktuelle Fakten (sage, was geprüft werden muss). Erfinde keine Studien, Zahlen oder Quellen. Wissenschaftliche Aussagen nur, wenn sie belegt sind, und mit dem Hinweis, dass Laborbefunde nicht eins zu eins auf Beratungsgespräche übertragbar sind. Nutze den Kontext, wenn er passt.\n\nKONTEXT AUS DER AKADEMIE:\n'+(ctx||'(keiner)')+'\n\nWISSENSDATENBANK DES NUTZERS:\n'+(W||'(leer)')+'\n\nFRAGE:\n'+q;
     sample([{role:'user',content:pr}],{cache:false,modelTier:'default'}).then(function(res){wk.busy=false;wk.ans={src:'ki',t:res.text,units:units};render()},function(er){local(chErr(er)+' Hier sind passende Lerneinheiten.')});
@@ -318,7 +321,9 @@ function wkUnit(id){
 }
 function viewAkademie(){
   var h=wissenSeg('akademie');
-  return h+(wk.unit?wkUnit(wk.unit):wk.cat?wkList(wk.cat):wkHome());
+  if(wk.unit&&TIEF_IDX[wk.unit])return h+tfUnit(wk.unit);
+  if(wk.cat==='Q')return h+tfQuellen();
+  return h+(wk.unit?wkUnit(wk.unit)+tfLinksFor(wk.unit):wk.cat?wkList(wk.cat):wkHome());
 }
 /* lokale Rückmeldung ohne KI */
 function exLocal(txt,u){
